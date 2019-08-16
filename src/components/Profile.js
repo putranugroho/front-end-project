@@ -11,13 +11,14 @@ class Profile extends Component {
         console.log(f_name);
         
             return (
-                <div className="container mt-5">
-                    <Jumbotron >
+                <Jumbotron >
+                    <div className="container mt-5">
                         <img src={`http://localhost:2019/users/avatar/${avatar}`}  alt="Please choose your avatar" key={new Date()} />
                         <h1 className="display-3">Hello, {username}</h1>
-                        <p className="lead"></p>
-                    </Jumbotron>
-                </div>
+                        <p className="lead">Lay childe peace passed parasites and he. Spent it nor sad cell this ungodly and cared sister, stalked adversity be noontide scape dwell. Youth few mote passion mood bade vexed was all, change the when then one haply him passed, his mirth these bacchanals sea though. Aye the and his.</p>
+                        <button className="btn btn-primary">Learn more >></button>
+                    </div>
+                </Jumbotron>
             )
         }
 

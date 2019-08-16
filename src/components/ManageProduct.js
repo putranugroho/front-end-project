@@ -187,9 +187,9 @@ class ManageProduct extends Component {
     }
 
     render () {
-    // if(this.props.user.username === ''){
-    //     return <Redirect to='/login'/>
-    // }
+    if(this.props.user.username === ''){
+        return <h1> L o a d i n g . . . </h1>
+    }
     return (
         <div className="container">
             <h1 className="display-4 text-center">List Product</h1>

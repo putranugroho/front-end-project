@@ -28,7 +28,7 @@ class Slider extends Component {
     renderList = () => {
         return items.map(item => { // hasil map = item{id,name,desc,price,src}
             return (
-                <img src={item.src} alt={item.altText} />
+                <img style={{width: 1500,height: 500}} src={item.src} alt={item.altText} />
             )
         })
     }
@@ -40,15 +40,15 @@ class Slider extends Component {
               {
                 breakpoint: 500,
                 settings: {
-                  slidesToShow: 2,
-                  slidesToScroll: 2,
+                  slidesToShow: 1,
+                  slidesToScroll: 1,
                 },
               },
               {
                 breakpoint: 768,
                 settings: {
-                  slidesToShow: 3,
-                  slidesToScroll: 3,
+                  slidesToShow: 1,
+                  slidesToScroll: 1,
                 },
               },
             ]}

@@ -11,6 +11,7 @@ import ProductSlider from './ProductSlider'
 import ManageProduct from './ManageProduct'
 import Login from './Login'
 import Profile from './Profile'
+import Blog from './Blog'
 // import detailProduct from './detailProduct'
 // import checkOut from './checkout'
 import Footer from './Footer'
@@ -43,6 +44,7 @@ class App extends React.Component{
                     <Route path='/' exact component={ProductSlider}/>
                     <Route path='/manageproduct' component={ManageProduct}/>
                     <Route path='/profile' component={Profile}/>
+                    <Route path='/blog' component={Blog}/>
                     {/* <Route path='/detailproduct/:product_id' component={detailProduct}/> */}
                     {/* <Route path='/checkout' component={checkOut}/> */}
                     {/* <Footer/> */}

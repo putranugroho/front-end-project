@@ -11,18 +11,28 @@ class Register extends Component {
         const email = this.email.value
         const password = this.password.value
 
-        axios.post(
-            'http://localhost:2019/users/input',
-            {
-                username, f_name, l_name, email, password
-            }
-        ).then( (res) => {
-            console.log('Data berhasil di input')
-            console.log(res)
-        }).catch( (err) => {
-            console.log('Gagal post data')
-            console.log(err)
-        })
+        if (username === '') {
+            return alert("Username harus diisi")
+        } else if (f_name === '' || l_name === '') {
+            return alert("Nama harus diisi")
+        }else if (email === '') {
+            return alert("Email harus diisi")
+        }else if (password === '') {
+            return alert("Password harus diisi")
+        }else{
+            axios.post(
+                'http://localhost:2019/users/input',
+                {
+                    username, f_name, l_name, email, password
+                }
+            ).then( (res) => {
+                console.log('Data berhasil di input')
+                console.log(res)
+            }).catch( (err) => {
+                console.log('Gagal post data')
+                console.log(err)
+            })
+        }
     }
 
     render (){

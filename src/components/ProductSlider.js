@@ -5,7 +5,7 @@ import ProductItem from './ProductItem'
 
 class ProductSlider extends Component {
   state = {
-    products : []
+    products : null
   }
 
   componentDidMount(){
@@ -30,6 +30,9 @@ class ProductSlider extends Component {
   }
 
     render () {
+      if (this.state.products === null){
+        return <h1> L o a d i n g . . . </h1>
+      }
         return (
           <div className="container">
             <hr></hr>
@@ -42,15 +45,15 @@ class ProductSlider extends Component {
               {
                 breakpoint: 500,
                 settings: {
-                  slidesToShow: 2,
-                  slidesToScroll: 2,
+                  slidesToShow: 5,
+                  slidesToScroll: 1,
                 },
               },
               {
                 breakpoint: 768,
                 settings: {
                   slidesToShow: 3,
-                  slidesToScroll: 3,
+                  slidesToScroll: 1,
                 },
               },
             ]}

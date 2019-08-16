@@ -17,6 +17,8 @@ export const onLoginUser = (username, password) => {
                 // Print errornya
                 alert('Error: ' + res.data)
             } else {
+                console.log(res.data);
+                
             const {id, username, f_name, l_name, email, avatar, age, gender} = res.data
             // console.log(res.data[0].username + " berhasil login");
             dispatch(

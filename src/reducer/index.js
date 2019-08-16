@@ -3,7 +3,13 @@ import { combineReducers } from 'redux'
 
 const init = {
     id: '',
-    username: ''
+    username: '', 
+    f_name: '', 
+    l_name: '', 
+    email: '', 
+    avatar: '', 
+    age: '', 
+    gender: ''
 }
 
 const AuthReducer = (data = init, action) => {
@@ -12,7 +18,13 @@ const AuthReducer = (data = init, action) => {
             return {
                 ...data,
                 id: action.payload.id,
-                username: action.payload.username
+                username: action.payload.username,
+                f_name: action.payload.f_name, 
+                l_name: action.payload.l_name, 
+                email: action.payload.email, 
+                avatar: action.payload.avatar, 
+                age: action.payload.age, 
+                gender: action.payload.gender
             }
 
         case "LOGOUT_SUCCESS":

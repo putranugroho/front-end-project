@@ -63,7 +63,9 @@ import {
                             <div className="col-4">
                             </div>
                             <div className="col-4 text-center align-self-center">
+                            <a href='/'>
                             <h2>RUMAHKU HIJAU</h2>
+                            </a>
                             </div>
                             <div className="col-4">
                         <Navbar light expand="md">
@@ -101,7 +103,7 @@ import {
                     <Collapse isOpen={this.state.isOpen} navbar>
                         <Nav className="ml-auto" navbar>
                         <NavItem className='mt-2 ml-auto'>
-                            <Link to='/' >All Products</Link>
+                            <Link to='/product' >All Products</Link>
                         </NavItem>
                         <UncontrolledDropdown nav inNavbar>
                         <DropdownToggle nav caret>

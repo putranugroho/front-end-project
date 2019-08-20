@@ -11,7 +11,7 @@ class Home extends Component {
                         <img class="rounded-circle" src="https://images.unsplash.com/photo-1543364195-bfe6e4932397?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=401&q=80" alt="Generic placeholder image" width="140" height="140"/>
                         <h2 className="mt-2">Products</h2>
                         <p>Donec sed odio dui. Etiam porta sem malesuada magna mollis euismod. Nullam id dolor id nibh ultricies vehicula ut id elit. Morbi leo risus, porta ac consectetur ac, vestibulum at eros. Praesent commodo cursus magna.</p>
-                        <p><a class="btn btn-secondary" href="#" role="button">View details »</a></p>
+                        <p><a class="btn btn-secondary" href="/product" role="button">View details »</a></p>
                     </div>
                     <div class="col-lg-4">
                         <img class="rounded-circle" src="https://images.unsplash.com/reserve/LJIZlzHgQ7WPSh5KVTCB_Typewriter.jpg?ixlib=rb-1.2.1&auto=format&fit=crop&w=341&q=80" alt="Generic placeholder image" width="140" height="140"/>

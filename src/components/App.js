@@ -12,6 +12,7 @@ import ManageProduct from './ManageProduct'
 import Login from './Login'
 import Profile from './Profile'
 import Blog from './Blog'
+import Event from './Event'
 // import detailProduct from './detailProduct'
 // import checkOut from './checkout'
 import Footer from './Footer'
@@ -41,10 +42,11 @@ class App extends React.Component{
                     <Route path='/login' component={Login}/>
                     <Route path='/' exact component={Slider}/>
                     <Route path='/' exact component={Home}/>
-                    <Route path='/' exact component={ProductSlider}/>
+                    <Route path='/product' exact component={ProductSlider}/>
                     <Route path='/manageproduct' component={ManageProduct}/>
                     <Route path='/profile' component={Profile}/>
                     <Route path='/blog' component={Blog}/>
+                    <Route path='/event' component={Event}/>
                     {/* <Route path='/detailproduct/:product_id' component={detailProduct}/> */}
                     {/* <Route path='/checkout' component={checkOut}/> */}
                     {/* <Footer/> */}

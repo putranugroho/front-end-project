@@ -28,7 +28,7 @@ class Slider extends Component {
     renderList = () => {
         return items.map(item => { // hasil map = item{id,name,desc,price,src}
             return (
-                <img style={{width: 1500,height: 500}} src={item.src} alt={item.altText} />
+                <img style={{width: 2000,height: 500}} src={item.src} alt={item.altText} />
             )
         })
     }

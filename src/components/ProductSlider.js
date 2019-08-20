@@ -45,7 +45,7 @@ class ProductSlider extends Component {
               {
                 breakpoint: 500,
                 settings: {
-                  slidesToShow: 5,
+                  slidesToShow: 3,
                   slidesToScroll: 1,
                 },
               },
@@ -62,7 +62,7 @@ class ProductSlider extends Component {
             sidesOpacity={.5}
             sideSize={.1}
             slidesToScroll={1}
-            slidesToShow={5}
+            slidesToShow={4}
             scrollOnDevice={true}
           >
             

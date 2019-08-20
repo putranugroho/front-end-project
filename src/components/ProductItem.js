@@ -7,11 +7,11 @@ import React, { Component } from 'react'
 class ProductItem extends Component {
 
     render () {
-        var {product_name,price,src} = this.props.items
+        var {product_name,price,image} = this.props.items
             return (
-                // <div class="container">
+                <div class="container">
                         <div className='card-body'>
-                            {/* <img className='card-img-top' src={src} alt=""/> */}
+                            <img className='list' style={{width: 150, height: 150}} src={`http://localhost:2019/products/avatar/${image}`}/>
                             <div className='card-body'>
                                 <h5 className='card-title'>{product_name}</h5>
                                 <p className='card-text'>Rp. {price}</p>

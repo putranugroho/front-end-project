@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import axios from 'axios'
-import { Redirect } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import { connect } from 'react-redux'
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 
@@ -11,7 +11,8 @@ class ManageProduct extends Component {
         products: [],
         category : [],
         selectedID: 0,
-        input : false
+        input : false,
+        upload : 0
     }
 
     componentDidMount(){
@@ -22,7 +23,7 @@ class ManageProduct extends Component {
     getProduct = () => {
         axios.get('http://localhost:2019/products')
             .then(res => {
-               this.setState({products: res.data, selectedID : 0, input : 0})
+               this.setState({products: res.data, selectedID : 0, input : 0, upload : 0})
             })
     }
 
@@ -35,12 +36,12 @@ class ManageProduct extends Component {
 
     addProduct = () => {
         const product_name = this.product_name.value
-        const category = this.category.value
+        const category_name = this.category.value // category_name
         const detail = this.desc.value
         const price = this.price.value
         const stock = this.stock.value
         
-        axios.get('http://localhost:2019/categoryname?category_name='+category)
+        axios.get('http://localhost:2019/categoryname?category_name='+category_name)
         .then(res=>{
             const category_id = res.data.id
 
@@ -56,15 +57,6 @@ class ManageProduct extends Component {
                 console.log(res);
                 this.getProduct()
             })
-        })
-    }
-
-    deleteProduct = (item) => {
-        
-        axios.delete('http://localhost:2019/products/'+item.id).then(res=>{
-            console.log("data telah dihapus");
-            console.log(res);
-            this.getProduct() 
         })
     }
 
@@ -89,9 +81,29 @@ class ManageProduct extends Component {
             }).then(res=>{
                 console.log("data telah disimpan");
                 console.log(res);
-                console.log(item);
                 this.getProduct()
             })
+        })
+    }
+
+    uploadImage = (id) => {
+        const formData = new FormData()
+        const image = this.image.files[0]
+        
+        formData.append('image', image)
+        formData.append('id', id)
+
+        axios.post('http://localhost:2019/products/image/', formData
+        ).then(res=>{
+            this.getProduct()
+        })
+    }
+
+    deleteProduct = (item) => {
+        axios.delete('http://localhost:2019/products/'+item.id).then(res=>{
+            console.log("data telah dihapus");
+            console.log(res);
+            this.getProduct() 
         })
     }
 
@@ -115,7 +127,7 @@ class ManageProduct extends Component {
                     <th scope="col"><input ref={input => this.desc = input} className="form-control" type="text" /></th>
                     <th scope="col"><input ref={input => this.price = input} className="form-control" type="text" /></th>
                     <th scope="col"><input ref={input => this.stock = input} className="form-control" type="text" /></th>
-                    <th scope="col"><input ref={input => this.pict = input} className="form-control" type="text" /></th>
+                    <th scope="col"></th>
                     <th scope="col">
                         <button className="btn btn-warning" onClick={this.addProduct}>Add</button>
                         <button className="btn btn-danger" onClick={()=>this.setState({input : false})}>Cancel</button>
@@ -130,6 +142,44 @@ class ManageProduct extends Component {
             if(item.id !== this.state.selectedID){
                 return this.state.category.map( catMap => {
                     if(item.category_id == catMap.id){
+                        if (item.id !== this.state.upload){
+                            if (item.image) {
+                                return (
+                                    <tr>
+                                        <td>{item.id}</td>
+                                        <td>{item.product_name}</td>
+                                        <td>{catMap.category_name}</td>
+                                        <td>{item.detail}</td>
+                                        <td>{item.price}</td>
+                                        <td>{item.stock}</td>
+                                        <td>
+                                            <img className='list' onClick={()=>{this.setState({upload : item.id})}} style={{width: 250, height: 200}} src={`http://localhost:2019/products/avatar/${item.image}`}/>
+                                        </td>
+                                        <td>            
+                                            <Button color="danger" onClick={()=>{this.setState({selectedID : item.id})}}>Edit</Button>
+                                            <button className = 'btn btn-warning m-1' onClick={()=>{this.deleteProduct(item)}}>Delete</button>
+                                        </td>
+                                    </tr>
+                                )
+                            }
+                            return (
+                                <tr>
+                                    <td>{item.id}</td>
+                                    <td>{item.product_name}</td>
+                                    <td>{catMap.category_name}</td>
+                                    <td>{item.detail}</td>
+                                    <td>{item.price}</td>
+                                    <td>{item.stock}</td>
+                                    <td>
+                                    <button onClick={()=>{this.setState({upload : item.id})}}>Upload</button>
+                                    </td>
+                                    <td>            
+                                        <Button color="danger" onClick={()=>{this.setState({selectedID : item.id})}}>Edit</Button>
+                                        <button className = 'btn btn-warning m-1' onClick={()=>{this.deleteProduct(item)}}>Delete</button>
+                                    </td>
+                                </tr>
+                            )
+                        }
                         return (
                             <tr>
                                 <td>{item.id}</td>
@@ -139,11 +189,11 @@ class ManageProduct extends Component {
                                 <td>{item.price}</td>
                                 <td>{item.stock}</td>
                                 <td>
-                                    <img className='list' src={item.src}/>
+                                <input type='file' ref={input => {this.image = input}}/>
                                 </td>
                                 <td>            
-                                    <Button color="danger" onClick={()=>{this.setState({selectedID : item.id})}}>Edit</Button>
-                                    <button className = 'btn btn-warning m-1' onClick={()=>{this.deleteProduct(item)}}>Delete</button>
+                                    <button className = 'btn btn-danger m-1' onClick={()=>{this.uploadImage(item.id)}}>Save</button>
+                                    <button className = 'btn btn-warning m-1' onClick={()=>{this.setState({upload : 0})}}>Cancel</button>
                                 </td>
                             </tr>
                         )
@@ -159,7 +209,7 @@ class ManageProduct extends Component {
                         </td>
                         <td>
                             {/* <input className="form-control" ref={input => {this.editCategory = input}} type="text" /> */}
-                            <select class="form-control" ref={input => {this.editCategory = input}} defaultValue={item.category_id}>
+                            <select class="form-control" ref={input => {this.editCategory = input}}>
                                 {this.renderCategory()}
                             </select>
                         </td>
@@ -173,7 +223,7 @@ class ManageProduct extends Component {
                             <input className="form-control" ref={input => {this.editStock = input}} type="text" defaultValue={item.stock}/>
                         </td>
                         <td>
-                            <img className='list' src={item.src}/>
+                        {/* <input type='file' ref={input => {this.image = input}}/> */}
                         </td>
                         <td>            
                             <button className = 'btn btn-danger m-1' onClick={()=>{this.saveProduct(item.id)}}>Save</button>
@@ -209,7 +259,7 @@ class ManageProduct extends Component {
                 <tbody>
                     {this.renderList()}
                     {this.renderInputList()}
-                    <th scope="col"><button className="btn btn-outline-warning" onClick={()=>this.setState({input : true})}>Add</button></th>
+                    <th scope="col"><button className="btn btn-outline-warning" onClick={()=>this.setState({input : !this.state.input})}>Add</button></th>
                 </tbody>
             </table>
         </div>

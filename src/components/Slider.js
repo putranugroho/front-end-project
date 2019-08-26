@@ -3,22 +3,22 @@ import InfiniteCarousel from 'react-leaf-carousel';
 
 const items = [
     {
-      src: 'https://images.unsplash.com/photo-1444041217995-27e2cd75e414?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1467&q=80',
+      src: 'https://images.unsplash.com/photo-1462834366666-a6fc4db3fb0d?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=753&q=80',
       altText: 'Slide 1',
       caption: 'dimas anjing'
     },
     {
-      src: 'https://images.unsplash.com/photo-1475738198235-4b30fc20cff4?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1487&q=80',
+      src: 'https://images.unsplash.com/photo-1470087167738-6aa485ff65dc?ixlib=rb-1.2.1&auto=format&fit=crop&w=751&q=80',
       altText: 'Slide 2',
       caption: 'deni anjing'
     },
     {
-      src: 'https://images.unsplash.com/photo-1531062563406-03bb0697bd4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1504&q=80',
+      src: 'https://images.unsplash.com/photo-1433704334812-6c45b0b8784d?ixlib=rb-1.2.1&auto=format&fit=crop&w=753&q=80',
       altText: 'Slide 3',
       caption: 'bene anjing'
     },
     {
-      src: 'https://images.unsplash.com/photo-1475738198235-4b30fc20cff4?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1487&q=80',
+      src: 'https://images.unsplash.com/photo-1559038298-ef4eecdfdbb3?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=750&q=80',
       altText: 'Slide 4',
       caption: 'subur anjing'
     }
@@ -28,7 +28,7 @@ class Slider extends Component {
     renderList = () => {
         return items.map(item => { // hasil map = item{id,name,desc,price,src}
             return (
-                <img style={{width: 2000,height: 500}} src={item.src} alt={item.altText} />
+                <img style={{width: 1200,height: 500}} src={item.src} alt={item.altText} />
             )
         })
     }

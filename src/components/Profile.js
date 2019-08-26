@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import axios from 'axios'
+// import axios from 'axios'
 import { Jumbotron } from 'reactstrap'
 import { connect } from 'react-redux'
 
@@ -7,7 +7,7 @@ class Profile extends Component {
     
     render() {
         if(this.props.user){
-        const {id,username,avatar,f_name} = this.props.user
+        const {username,avatar,f_name} = this.props.user
         console.log(f_name);
         
             return (

@@ -1,8 +1,8 @@
 import React, { Component } from 'react'
 import axios from 'axios'
-import { Link } from 'react-router-dom'
+// import { Link } from 'react-router-dom'
 import { connect } from 'react-redux'
-import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
+import { Button } from 'reactstrap';
 
 
 class ManageProduct extends Component {
@@ -10,7 +10,7 @@ class ManageProduct extends Component {
    state = {
         products: [],
         category : [],
-        selectedID: 0,
+        edit: 0,
         input : false,
         upload : 0
     }
@@ -23,14 +23,14 @@ class ManageProduct extends Component {
     getProduct = () => {
         axios.get('http://localhost:2019/products')
             .then(res => {
-               this.setState({products: res.data, selectedID : 0, input : 0, upload : 0})
+               this.setState({products: res.data, edit : 0, input : 0, upload : 0})
             })
     }
 
     getCategory = () => {
         axios.get('http://localhost:2019/category')
             .then(res => {
-               this.setState({category: res.data, selectedID : 0})
+               this.setState({category: res.data, edit : 0})
             })
     }
 
@@ -117,7 +117,7 @@ class ManageProduct extends Component {
         if(this.state.input === true){
             return (
                 <tr>
-                    <th scope="col"><h5></h5></th>
+                    <th scope="col"></th>
                     <th scope="col"><input ref={input => this.product_name = input} className="form-control" type="text" /></th>
                     <th scope="col">
                         <select class="form-control" ref={input => {this.category = input}}>
@@ -139,9 +139,9 @@ class ManageProduct extends Component {
 
     renderList = () => {
         return this.state.products.map( item => { // {id, name, price, desc, src}
-            if(item.id !== this.state.selectedID){
+            if(item.id !== this.state.edit){
                 return this.state.category.map( catMap => {
-                    if(item.category_id == catMap.id){
+                    if(item.category_id === catMap.id){
                         if (item.id !== this.state.upload){
                             if (item.image) {
                                 return (
@@ -153,10 +153,10 @@ class ManageProduct extends Component {
                                         <td>{item.price}</td>
                                         <td>{item.stock}</td>
                                         <td>
-                                            <img className='list' onClick={()=>{this.setState({upload : item.id})}} style={{width: 250, height: 200}} src={`http://localhost:2019/products/avatar/${item.image}`}/>
+                                            <img className='list' alt='' onClick={()=>{this.setState({upload : item.id})}} style={{width: 250, height: 200}} src={`http://localhost:2019/products/avatar/${item.image}`}/>
                                         </td>
                                         <td>            
-                                            <Button color="danger" onClick={()=>{this.setState({selectedID : item.id})}}>Edit</Button>
+                                            <Button color="danger" onClick={()=>{this.setState({edit : item.id})}}>Edit</Button>
                                             <button className = 'btn btn-warning m-1' onClick={()=>{this.deleteProduct(item)}}>Delete</button>
                                         </td>
                                     </tr>
@@ -174,13 +174,13 @@ class ManageProduct extends Component {
                                     <button onClick={()=>{this.setState({upload : item.id})}}>Upload</button>
                                     </td>
                                     <td>            
-                                        <Button color="danger" onClick={()=>{this.setState({selectedID : item.id})}}>Edit</Button>
+                                        <Button color="danger" onClick={()=>{this.setState({edit : item.id})}}>Edit</Button>
                                         <button className = 'btn btn-warning m-1' onClick={()=>{this.deleteProduct(item)}}>Delete</button>
                                     </td>
                                 </tr>
                             )
                         }
-                        return (
+                        return(
                             <tr>
                                 <td>{item.id}</td>
                                 <td>{item.product_name}</td>
@@ -198,6 +198,7 @@ class ManageProduct extends Component {
                             </tr>
                         )
                     }
+                    return console.log("");
                 }
                 )
             } else {
@@ -227,7 +228,7 @@ class ManageProduct extends Component {
                         </td>
                         <td>            
                             <button className = 'btn btn-danger m-1' onClick={()=>{this.saveProduct(item.id)}}>Save</button>
-                            <button className = 'btn btn-warning m-1' onClick={()=>{this.setState({selectedID : 0})}}>Cancel</button>
+                            <button className = 'btn btn-warning m-1' onClick={()=>{this.setState({edit : 0})}}>Cancel</button>
                         </td>
                     </tr>
                 )

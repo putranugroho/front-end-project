@@ -2,14 +2,13 @@ import React, { Component } from 'react'
 // import axios from 'axios'
 import { Jumbotron } from 'reactstrap'
 import { connect } from 'react-redux'
+import { Redirect } from 'react-router-dom'
 
 class Profile extends Component {
     
     render() {
-        if(this.props.user){
-        const {username,avatar,f_name} = this.props.user
-        console.log(f_name);
-        
+        if(this.props.user.username !== ''){
+        const {username,avatar} = this.props.user
             return (
                 <Jumbotron >
                     <div className="container mt-5">
@@ -21,8 +20,7 @@ class Profile extends Component {
                 </Jumbotron>
             )
         }
-
-        return <h1>Loading</h1>
+        return <Redirect to='/'/>
     }
 }
 

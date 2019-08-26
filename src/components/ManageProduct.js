@@ -2,42 +2,73 @@ import React, { Component } from 'react'
 import axios from 'axios'
 // import { Link } from 'react-router-dom'
 import { connect } from 'react-redux'
-import { Button } from 'reactstrap';
+import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap'
 
 
 class ManageProduct extends Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            products: [],
+            search_pro: [],
+            category : [],
+            search_cat : [],
+            edit: 0,
+            input : false,
+            upload : 0,
+            detail : false,
+            pro_detail : false,
+            modal: false
+        };
     
-   state = {
-        products: [],
-        category : [],
-        edit: 0,
-        input : false,
-        upload : 0
+        this.toggle = this.toggle.bind(this);
     }
+    
+    // state = {
+    //     products: [],
+    //     category : [],
+    //     edit: 0,
+    //     input : false,
+    //     upload : 0,
+    //     detail : false,
+    // }
 
     componentDidMount(){
         this.getProduct()
         this.getCategory()
     }
 
+    toggle() {
+        this.setState(prevState => ({
+          modal: !prevState.modal,
+          detail: !prevState.detail
+        }));
+    }
+
     getProduct = () => {
         axios.get('http://localhost:2019/products')
             .then(res => {
-               this.setState({products: res.data, edit : 0, input : 0, upload : 0})
+               this.setState({products: res.data, search_pro : res.data, edit : 0, input : 0, upload : 0})
             })
     }
 
     getCategory = () => {
         axios.get('http://localhost:2019/category')
             .then(res => {
-               this.setState({category: res.data, edit : 0})
+               this.setState({category: res.data, search_cat : res.data, edit : 0})
+            })
+    }
+    
+    getDetail = () => {
+        axios.get('http://localhost:2019/detail')
+            .then(res => {
+               this.setState({pro_detail: res.data})
             })
     }
 
     addProduct = () => {
         const product_name = this.product_name.value
-        const category_name = this.category.value // category_name
-        const detail = this.desc.value
+        const category_name = this.category.value
         const price = this.price.value
         const stock = this.stock.value
         
@@ -49,7 +80,6 @@ class ManageProduct extends Component {
             {
                 product_name,
                 category_id,
-                detail,
                 price,
                 stock
             }).then(res=>{
@@ -63,7 +93,6 @@ class ManageProduct extends Component {
     saveProduct = (item) => {
         const product_name = this.editProduct_name.value
         const category = this.editCategory.value
-        const detail = this.editDesc.value
         const price = this.editPrice.value
         const stock = this.editStock.value
         
@@ -75,7 +104,6 @@ class ManageProduct extends Component {
             {
                 product_name,
                 category_id,
-                detail,
                 price,
                 stock
             }).then(res=>{
@@ -97,6 +125,39 @@ class ManageProduct extends Component {
         ).then(res=>{
             this.getProduct()
         })
+    }
+
+    onBtnSearch = () => {
+        const search = this.search.value
+        const searchInput = this.searchInput.value
+        console.log(search);
+        console.log(searchInput);
+
+
+
+        if(this.search.value === "Product Name"){
+            var proSearch = this.state.search_pro.filter (item => {
+                if(searchInput){
+                    return(
+                        item.product_name.toLowerCase().includes(searchInput.toLowerCase())
+                    )
+                }
+            })
+    
+            this.setState({products: proSearch})
+            this.setState({category: this.state.search_cat})
+        }else if(this.search.value === "Category"){
+            var catSearch = this.state.search_cat.filter (item => {
+                if(searchInput){
+                    return(
+                        item.category_name.toLowerCase().includes(searchInput.toLowerCase())
+                    )
+                }
+            })
+    
+            this.setState({category: catSearch})
+            this.setState({products: this.state.search_pro})
+        }
     }
 
     deleteProduct = (item) => {
@@ -124,7 +185,7 @@ class ManageProduct extends Component {
                                 {this.renderCategory()}
                         </select>
                     </th>
-                    <th scope="col"><input ref={input => this.desc = input} className="form-control" type="text" /></th>
+                    <th scope='col'></th>
                     <th scope="col"><input ref={input => this.price = input} className="form-control" type="text" /></th>
                     <th scope="col"><input ref={input => this.stock = input} className="form-control" type="text" /></th>
                     <th scope="col"></th>
@@ -133,6 +194,47 @@ class ManageProduct extends Component {
                         <button className="btn btn-danger" onClick={()=>this.setState({input : false})}>Cancel</button>
                     </th>
                 </tr>
+            )
+        }
+    }
+
+    renderDetail = () => {
+        if(this.state.detail === true){
+            return (
+                <div className="container">
+                    <table className="table table-hover mb-5">
+                        <tr>
+                            <th>
+                                Informasi
+                            </th>
+                        </tr>
+                        <tr>
+                            <th>
+                                <input></input>
+                            </th>
+                        </tr>
+                        <tr>
+                            <th>
+                                Manfaat
+                            </th>
+                        </tr>
+                        <tr>
+                            <th>
+                                <input></input>
+                            </th>
+                        </tr>
+                        <tr>
+                            <th>
+                                Tips & Trick
+                            </th>
+                        </tr>
+                        <tr>
+                            <th>
+                                <input></input>
+                            </th>
+                        </tr>
+                    </table>
+                </div>
             )
         }
     }
@@ -149,7 +251,9 @@ class ManageProduct extends Component {
                                         <td>{item.id}</td>
                                         <td>{item.product_name}</td>
                                         <td>{catMap.category_name}</td>
-                                        <td>{item.detail}</td>
+                                        <td>
+                                            <button onClick={this.toggle}>Detail</button>
+                                        </td>
                                         <td>{item.price}</td>
                                         <td>{item.stock}</td>
                                         <td>
@@ -167,7 +271,9 @@ class ManageProduct extends Component {
                                     <td>{item.id}</td>
                                     <td>{item.product_name}</td>
                                     <td>{catMap.category_name}</td>
-                                    <td>{item.detail}</td>
+                                    <td>
+                                        <button onClick={this.toggle}>Detail</button>
+                                    </td>
                                     <td>{item.price}</td>
                                     <td>{item.stock}</td>
                                     <td>
@@ -185,7 +291,9 @@ class ManageProduct extends Component {
                                 <td>{item.id}</td>
                                 <td>{item.product_name}</td>
                                 <td>{catMap.category_name}</td>
-                                <td>{item.detail}</td>
+                                <td>
+                                    <button onClick={this.toggle}>Detail</button>
+                                </td>
                                 <td>{item.price}</td>
                                 <td>{item.stock}</td>
                                 <td>
@@ -209,13 +317,11 @@ class ManageProduct extends Component {
                             <input className="form-control" ref={input => {this.editProduct_name = input}} type="text" defaultValue={item.product_name}/>
                         </td>
                         <td>
-                            {/* <input className="form-control" ref={input => {this.editCategory = input}} type="text" /> */}
                             <select class="form-control" ref={input => {this.editCategory = input}}>
                                 {this.renderCategory()}
                             </select>
                         </td>
                         <td>
-                            <input className="form-control" ref={input => {this.editDesc = input}} type="text" defaultValue={item.detail}/>
                         </td>
                         <td>
                             <input className="form-control" ref={input => {this.editPrice = input}} type="text" defaultValue={item.price}/>
@@ -224,7 +330,6 @@ class ManageProduct extends Component {
                             <input className="form-control" ref={input => {this.editStock = input}} type="text" defaultValue={item.stock}/>
                         </td>
                         <td>
-                        {/* <input type='file' ref={input => {this.image = input}}/> */}
                         </td>
                         <td>            
                             <button className = 'btn btn-danger m-1' onClick={()=>{this.saveProduct(item.id)}}>Save</button>
@@ -242,8 +347,18 @@ class ManageProduct extends Component {
         return <h1> L o a d i n g . . . </h1>
     }
     return (
-        <div className="container">
+        <div className="container mt-3">
             <h1 className="display-4 text-center">List Product</h1>
+            <div className="row">
+                <select class="col-3 m-1 form-control" ref={input => {this.search = input}}>
+                    <option>Product Name</option>
+                    <option>Category</option>
+                </select>
+                <input className="col-4 m-1" ref={input => {this.searchInput = input}}></input>
+                <button className="col-2 m-1"onClick={this.onBtnSearch}>Search</button>
+                <button className="col-2 m-1 btn btn-outline-warning" onClick={()=>this.setState({input : !this.state.input})}>New Product</button>
+            </div>
+            <br></br>
             <table className="table table-hover mb-5">
                 <thead>
                     <tr>
@@ -258,11 +373,20 @@ class ManageProduct extends Component {
                     </tr>
                 </thead>
                 <tbody>
-                    {this.renderList()}
                     {this.renderInputList()}
-                    <th scope="col"><button className="btn btn-outline-warning" onClick={()=>this.setState({input : !this.state.input})}>Add</button></th>
+                    {this.renderList()}
                 </tbody>
             </table>
+            <Modal isOpen={this.state.modal} toggle={this.toggle} className={this.props.className}>
+                <ModalHeader toggle={this.toggle}>List Product</ModalHeader>
+                <ModalBody>
+                {this.renderDetail()}
+                </ModalBody>
+                <ModalFooter>
+                    <Button color="primary" onClick={this.toggle}>Do Something</Button>{' '}
+                    <Button color="secondary" onClick={this.toggle}>Cancel</Button>
+                </ModalFooter>
+            </Modal>
         </div>
     )
     }

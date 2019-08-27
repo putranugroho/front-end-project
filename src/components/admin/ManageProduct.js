@@ -1,49 +1,25 @@
 import React, { Component } from 'react'
 import axios from 'axios'
-// import { Link } from 'react-router-dom'
 import { connect } from 'react-redux'
-import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap'
+import { Button } from 'reactstrap'
 
 
 class ManageProduct extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            products: [],
-            search_pro: [],
-            category : [],
-            search_cat : [],
-            edit: 0,
-            upload : 0,
-            input : false,
-            detail : false,
-            pro_detail : false,
-            modal: false,
-            filter: false
-        };
-    
-        this.toggle = this.toggle.bind(this);
-    }
-    
-    // state = {
-    //     products: [],
-    //     category : [],
-    //     edit: 0,
-    //     input : false,
-    //     upload : 0,
-    //     detail : false,
-    // }
+    state = {
+        products: [],
+        search_pro: [],
+        category : [],
+        search_cat : [],
+        edit: 0,
+        upload : 0,
+        input : false,
+        modal: false,
+        filter: false
+    };
 
     componentDidMount(){
         this.getProduct()
         this.getCategory()
-    }
-
-    toggle() {
-        this.setState(prevState => ({
-          modal: !prevState.modal,
-          detail: !prevState.detail
-        }));
     }
 
     getProduct = () => {
@@ -57,13 +33,6 @@ class ManageProduct extends Component {
         axios.get('http://localhost:2019/category')
             .then(res => {
                this.setState({category: res.data, search_cat : res.data, edit : 0})
-            })
-    }
-    
-    getDetail = () => {
-        axios.get('http://localhost:2019/detail')
-            .then(res => {
-               this.setState({pro_detail: res.data})
             })
     }
 
@@ -192,7 +161,7 @@ class ManageProduct extends Component {
 
     renderCategory = () => {
         return this.state.category.map( catMap => {
-            return (<option>{catMap.category_name}</option>)
+            return (<option value={catMap.id}>{catMap.category_name}</option>)
         })
     }
 
@@ -220,47 +189,6 @@ class ManageProduct extends Component {
         }
     }
 
-    renderDetail = () => {
-        if(this.state.detail === true){
-            return (
-                <div className="container">
-                    <table className="table table-hover mb-5">
-                        <tr>
-                            <th>
-                                Informasi
-                            </th>
-                        </tr>
-                        <tr>
-                            <th>
-                                <input></input>
-                            </th>
-                        </tr>
-                        <tr>
-                            <th>
-                                Manfaat
-                            </th>
-                        </tr>
-                        <tr>
-                            <th>
-                                <input></input>
-                            </th>
-                        </tr>
-                        <tr>
-                            <th>
-                                Tips & Trick
-                            </th>
-                        </tr>
-                        <tr>
-                            <th>
-                                <input></input>
-                            </th>
-                        </tr>
-                    </table>
-                </div>
-            )
-        }
-    }
-
     renderList = () => {
         return this.state.products.map( item => { // {id, name, price, desc, src}
             if(item.id !== this.state.edit){
@@ -273,9 +201,6 @@ class ManageProduct extends Component {
                                         <td>{item.id}</td>
                                         <td>{item.product_name}</td>
                                         <td>{catMap.category_name}</td>
-                                        <td>
-                                            <button onClick={this.toggle}>Detail</button>
-                                        </td>
                                         <td>{item.price}</td>
                                         <td>{item.stock}</td>
                                         <td>
@@ -293,9 +218,6 @@ class ManageProduct extends Component {
                                     <td>{item.id}</td>
                                     <td>{item.product_name}</td>
                                     <td>{catMap.category_name}</td>
-                                    <td>
-                                        <button onClick={this.toggle}>Detail</button>
-                                    </td>
                                     <td>{item.price}</td>
                                     <td>{item.stock}</td>
                                     <td>
@@ -313,9 +235,6 @@ class ManageProduct extends Component {
                                 <td>{item.id}</td>
                                 <td>{item.product_name}</td>
                                 <td>{catMap.category_name}</td>
-                                <td>
-                                    <button onClick={this.toggle}>Detail</button>
-                                </td>
                                 <td>{item.price}</td>
                                 <td>{item.stock}</td>
                                 <td>
@@ -338,7 +257,7 @@ class ManageProduct extends Component {
                             <input className="form-control" ref={input => {this.editProduct_name = input}} type="text" defaultValue={item.product_name}/>
                         </td>
                         <td>
-                            <select class="form-control" ref={input => {this.editCategory = input}}>
+                            <select class="form-control" ref={input => {this.editCategory = input}} defaultValue={item.category_id}>
                                 {this.renderCategory()}
                             </select>
                         </td>
@@ -370,8 +289,8 @@ class ManageProduct extends Component {
         if(this.state.filter){
             return (
                 <div className="container mt-3">
-                    <h1 className="display-4 text-center">List Product</h1>
-                    <div class="input-group mb-3">
+                    <h1 className="display-4 text-center">Manage Product</h1>
+                    <div class="input-group mb-10">
                         <div class="input-group-prepend">
                             <span class="input-group-text" id="basic-addon1">Nama Product</span>
                         </div>
@@ -385,9 +304,10 @@ class ManageProduct extends Component {
                         </div>
                         <input type="text" class="form-control" ref={input => {this.min = input}} placeholder="Masukan harga minimal product" aria-describedby="basic-addon1"/>
                         <input type="text" class="form-control" ref={input => {this.max = input}} placeholder="Masukan harga maximal product" aria-describedby="basic-addon1"/>
-                        <button className='btn btn-success ml-2' onClick={this.onBtnSearch}>Search</button>
+                        <button className='btn btn-success ml-2' onClick={()=>this.onBtnSearch()}>Search</button>
                         <img className='ml-2' style={{width: 35, height: 35}} alt='' src='https://image.flaticon.com/icons/svg/291/291202.svg' onClick={this.resetFilter} />
                     </div>
+                    <button className='btn btn-block btn-success' onClick={()=>this.setState({input:!this.state.input})}>Add Product</button>
                     <br></br>
                     <table className="table table-hover mb-5">
                         <thead>
@@ -395,7 +315,6 @@ class ManageProduct extends Component {
                                 <th scope="col">ID</th>
                                 <th scope="col">PRODUCT NAME</th>
                                 <th scope="col">CATEGORY</th>
-                                <th scope="col">DESC</th>
                                 <th scope="col">PRICE</th>
                                 <th scope="col">STOCK</th>
                                 <th scope="col">PICTURE</th>
@@ -407,22 +326,12 @@ class ManageProduct extends Component {
                             {this.renderList()}
                         </tbody>
                     </table>
-                    <Modal isOpen={this.state.modal} toggle={this.toggle} className={this.props.className}>
-                        <ModalHeader toggle={this.toggle}>List Product</ModalHeader>
-                        <ModalBody>
-                        {this.renderDetail()}
-                        </ModalBody>
-                        <ModalFooter>
-                            <Button color="primary" onClick={this.toggle}>Do Something</Button>{' '}
-                            <Button color="secondary" onClick={this.toggle}>Cancel</Button>
-                        </ModalFooter>
-                    </Modal>
                 </div>
             )
         }
         return (
             <div className="container mt-3">
-                <h1 className="display-4 text-center">List Product</h1>
+                <h1 className="display-4 text-center">Manage Product</h1>
                 <div class="input-group mb-3">
                     <div class="input-group-prepend">
                         <span class="input-group-text" id="basic-addon1">Nama Product</span>
@@ -437,8 +346,9 @@ class ManageProduct extends Component {
                     </div>
                     <input type="text" class="form-control" ref={input => {this.min = input}} placeholder="Masukan harga minimal product" defaultValue='' aria-describedby="basic-addon1"/>
                     <input type="text" class="form-control" ref={input => {this.max = input}} placeholder="Masukan harga maximal product" defaultValue='' aria-describedby="basic-addon1"/>
-                    <button className='btn btn-success ml-2' onClick={this.onBtnSearch}>Search</button>
+                    <button className='btn btn-success ml-2' onClick={()=>this.onBtnSearch()}>Search</button>
                 </div>
+                <button className='btn btn-block btn-success' onClick={()=>this.setState({input:!this.state.input})}>Add Product</button>
                 <br></br>
                 <table className="table table-hover mb-5">
                     <thead>
@@ -446,7 +356,6 @@ class ManageProduct extends Component {
                             <th scope="col">ID</th>
                             <th scope="col">PRODUCT NAME</th>
                             <th scope="col">CATEGORY</th>
-                            <th scope="col">DESC</th>
                             <th scope="col">PRICE</th>
                             <th scope="col">STOCK</th>
                             <th scope="col">PICTURE</th>
@@ -458,16 +367,6 @@ class ManageProduct extends Component {
                         {this.renderList()}
                     </tbody>
                 </table>
-                <Modal isOpen={this.state.modal} toggle={this.toggle} className={this.props.className}>
-                    <ModalHeader toggle={this.toggle}>List Product</ModalHeader>
-                    <ModalBody>
-                    {this.renderDetail()}
-                    </ModalBody>
-                    <ModalFooter>
-                        <Button color="primary" onClick={this.toggle}>Do Something</Button>{' '}
-                        <Button color="secondary" onClick={this.toggle}>Cancel</Button>
-                    </ModalFooter>
-                </Modal>
             </div>
         )  
     }

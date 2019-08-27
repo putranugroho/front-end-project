@@ -50,24 +50,24 @@ class Header extends Component {
                         </div>
                         <div className="col-4">
                     <Navbar light expand="md">
-                    <NavbarToggler onClick={this.toggle} />
-                    <Collapse isOpen={this.state.isOpen} navbar>
-                        <Nav className="ml-auto" navbar>
-                        <NavItem>
-                            <NavLink href="/components/">Components</NavLink>
-                        </NavItem>
-                        <a href='/login'>
-                        <button className = "btn btn-primary" >
-                            Login
-                        </button>
-                        </a>
-                        <a href='/register'>
-                        <button className = "btn btn-success" href="/register">
-                            Register
-                        </button>
-                        </a>
-                        </Nav>
-                    </Collapse>
+                        <NavbarToggler onClick={this.toggle} />
+                            <Collapse isOpen={this.state.isOpen} navbar>
+                                <Nav className="ml-auto" navbar>
+                                <NavItem>
+                                    <NavLink href="/product">Products</NavLink>
+                                </NavItem>
+                                <a href='/login'>
+                                <button className = "btn btn-primary" >
+                                    Login
+                                </button>
+                                </a>
+                                <a href='/register'>
+                                <button className = "btn btn-success" href="/register">
+                                    Register
+                                </button>
+                                </a>
+                                </Nav>
+                            </Collapse>
                     </Navbar>
                     </div>
                 </div>
@@ -91,6 +91,9 @@ class Header extends Component {
                 <NavbarToggler onClick={this.toggle} />
                 <Collapse isOpen={this.state.isOpen} navbar>
                     <Nav className="ml-auto" navbar>
+                    <NavItem>
+                        <NavLink href="/product">Products</NavLink>
+                    </NavItem>
                     <UncontrolledDropdown nav inNavbar>
                     <DropdownToggle nav caret>
                         Welcome, {this.props.user.username}

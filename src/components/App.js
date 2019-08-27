@@ -8,7 +8,8 @@ import Home from './Home'
 import Header from './Header'
 import Slider from './Slider'
 import Product from './Product'
-import ManageProduct from './ManageProduct'
+import ManageProduct from './admin/ManageProduct'
+import HomeAdmin from './admin/HomeAdmin'
 import Login from './Login'
 import Profile from './Profile'
 import Blog from './Blog'
@@ -48,6 +49,7 @@ class App extends React.Component{
                     <Route path='/blog' component={Blog}/>
                     <Route path='/event' component={Event}/>
                     <Route path='/detailproduct/:product_id' component={detailProduct}/>
+                    <Route path='/admin' component={HomeAdmin}/>
                     {/* <Route path='/checkout' component={checkOut}/> */}
                     {/* <Footer/> */}
                 </div>
@@ -57,4 +59,3 @@ class App extends React.Component{
 }
 
 export default connect(null, {keepLogin})(App)
-// export default App

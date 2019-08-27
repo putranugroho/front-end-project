@@ -24,6 +24,7 @@ class Profile extends Component {
         ).then(res=>{
             console.log('upload berhasil');
             this.props.updateProfile(id)
+            this.setState({upload:false})
         })
     }
 
@@ -67,40 +68,83 @@ class Profile extends Component {
     }
 
     renderInput = () => {
-        const {username, id, email, f_name, l_name} = this.props.user
-
+        const {username, id, email, f_name, l_name, age, gender} = this.props.user
+        if (this.state.edit) {
         return (
             <div className="col-sm-6 m-2">
-                <h1 className="display-3">Hello, {username} </h1>
-                <div class="input-group mb-3">
-                    <div class="input-group-prepend">
-                        <span class="input-group-text" id="basic-addon1">ID</span>
+                <form>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="firstName">First name</label>
+                        <input type="text" class="form-control" id="firstName" placeholder="" value="" required=""/>
                     </div>
-                    <input type="text" class="form-control" defaultValue={id} aria-label="Username" aria-describedby="basic-addon1"/>
-                </div>
-                <div class="input-group mb-3">
-                    <div class="input-group-prepend">
-                        <span class="input-group-text" id="basic-addon1">First Name</span>
+                    <div class="col-md-6 mb-3">
+                        <label for="lastName">Last name</label>
+                        <input type="text" class="form-control" id="lastName" placeholder="" value="" required=""/>
                     </div>
-                    <input type="text" class="form-control" defaultValue={f_name} aria-label="Username" aria-describedby="basic-addon1"/>
                 </div>
-                <div class="input-group mb-3">
-                    <div class="input-group-prepend">
-                        <span class="input-group-text" id="basic-addon1">Last Name</span>
+
+                <div class="mb-3">
+                    <label for="username">Username</label>
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                        <span class="input-group-text">@</span>
+                        </div>
+                        <input type="text" class="form-control" id="username" placeholder="Username" required=""/>
                     </div>
-                    <input type="text" class="form-control" defaultValue={l_name} aria-label="Username" aria-describedby="basic-addon1"/>
                 </div>
-                <div class="input-group mb-3">
-                    <div class="input-group-prepend">
-                        <span class="input-group-text" id="basic-addon1">Email</span>
-                    </div>
-                    <input type="text" class="form-control" defaultValue={email} aria-label="Username" aria-describedby="basic-addon1"/>
+
+                <div class="mb-3">
+                    <label for="email">Email</label>
+                    <input type="email" class="form-control" id="email" placeholder="you@example.com"/>
                 </div>
+
+                <div class="mb-3">
+                    <label for="address">Age</label>
+                    <input type="text" class="form-control" id="address" placeholder="69 Years Old" required=""/>
+                </div>
+
+                <div class="mb-3">
+                    <label for="address">Gender</label>
+                    <input type="text" class="form-control" id="address" placeholder="Male / Female" required=""/>
+                </div>
+
+                </form>
                 <p className='text-center'>
-                <button className="btn btn-primary my-3" onClick={() => {this.setState({edit:!this.state.edit})}}>Edit Profile >></button>
+                <button className="btn btn-primary m-3" onClick={() => this.saveProfile()} >Save</button>
+                <button className="btn btn-primary m-3" onClick={() => this.setState({edit:!this.state.edit})} >Cancel</button>
                 </p>
             </div>
         )
+        } else {
+            return(
+            <div className="col-sm-6 m-2">
+            <h1 className="display-3">Hello, {username} </h1>
+            <div className='row'>
+                <h6>
+                <label className='col-4'>FULLNAME</label>
+                <label className='col-2 text-left'>:</label>
+                <label className='col-3'>{f_name}</label>
+                <label className='col-3'>{l_name}</label>
+                </h6>
+            </div>
+            <div className='row'>
+                <label className='col-4'>Email : </label>
+                <label className='col-4'>{email}</label>
+            </div>
+            <div className='row'>
+                <label className='col-4'>Age : </label>
+                <label className='col-4'>{age}</label>
+            </div>
+            <div className='row'>
+                <label className='col-4'>Gender : </label>
+                <label className='col-4'>{gender}</label>
+            </div>
+            <button className="btn btn-primary my-3" onClick={() => this.setState({edit:!this.state.edit})} >EDIT</button>
+            </div>
+            )
+
+        }
     }
 
     render() {

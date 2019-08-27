@@ -27,19 +27,6 @@ const AuthReducer = (data = init, action) => {
                 gender: action.payload.gender
             }
 
-            case "UPDATE_SUCCESS":
-                return {
-                    ...data,
-                    id: action.payload.id,
-                    username: action.payload.username,
-                    f_name: action.payload.f_name, 
-                    l_name: action.payload.l_name, 
-                    email: action.payload.email, 
-                    avatar: action.payload.avatar, 
-                    age: action.payload.age, 
-                    gender: action.payload.gender
-                }
-
         case "LOGOUT_SUCCESS":
             return {
                 ...data,

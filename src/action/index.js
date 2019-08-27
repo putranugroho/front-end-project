@@ -68,7 +68,7 @@ export const updateProfile = (id) => {
             // console.log(res.data[0].username + " berhasil login");
             dispatch(
                 {
-                    type: 'UPDATE_SUCCESS', // untuk menentukan reducer mana yang akan memproses
+                    type: 'LOGIN_SUCCESS', // untuk menentukan reducer mana yang akan memproses
                     payload: {
                         id, username, f_name, l_name, email, avatar, age, gender
                     } // berisi data yang akan di taruh di state

@@ -7,24 +7,33 @@ import { Button } from 'reactstrap';
 
 class ManageDetail extends Component {
     
-   state = {
-        category: [],
+    state = {
+        products: [],
+        detail: [],
         edit : 0,
         input : 0
     }
 
     componentDidMount(){
-        this.getCategory()
+        this.getDetail()
+        this.getProduct()
     }
 
-    getCategory = () => {
-        axios.get('http://localhost:2019/category')
+    getProduct = () => {
+        axios.get('http://localhost:2019/products')
             .then(res => {
-               this.setState({category: res.data, edit : 0, input : 0})
+               this.setState({products: res.data, edit : 0, input : 0})
             })
     }
 
-    addProduct = () => {
+    getDetail = () => {
+        axios.get('http://localhost:2019/detail')
+            .then(res => {
+               this.setState({detail: res.data, edit : 0, input : 0})
+            })
+    }
+
+    addDetail = () => {
         const category_name = this.category_name.value
         
         axios.post(
@@ -50,7 +59,7 @@ class ManageDetail extends Component {
         })
     }
 
-    saveProduct = (item) => {
+    saveDetail = (item) => {
         const category_name = this.category_name.value
         
         axios.patch('http://localhost:2019/category/'+item.id,
@@ -63,65 +72,57 @@ class ManageDetail extends Component {
         })
     }
 
-    renderInputList = () => {
-        if(this.state.input === true){
-            return (
-                <tr>
-                    <th scope="col"></th>
-                    <th scope="col"><input ref={input => this.category_name = input} className="form-control" type="text" /></th>
-                    <th scope="col">
-                        <button className="btn btn-warning" onClick={this.addProduct}>Add</button>
-                        <button className="btn btn-danger" onClick={()=>this.setState({input : false})}>Cancel</button>
-                    </th>
-                </tr>
-            )
-        }
-    }
-
     renderList = () => {
-        return this.state.category.map( item => { // {id, name, price, desc, src}
-            if(item.id !== this.state.edit){
-                return (
-                <tr>
-                    <td>{item.id}</td>
-                    <td>{item.category_name}</td>
-                    <td>            
-                        <Button color="danger" onClick={()=>{this.setState({edit : item.id})}}>Edit</Button>
-                        <button className = 'btn btn-warning m-1' onClick={()=>{this.deleteCategory(item)}}>Delete</button>
-                    </td>
-                </tr>
-                )
-            } else {
-                return (
-                    <tr>
-                        <td>{item.id}</td>
-                        <td>
-                            <input className="form-control" ref={input => {this.editNama = input}} type="text" defaultValue={item.category_name}/>
-                        </td>
-                        <td>            
-                            <button className = 'btn btn-danger m-1' onClick={()=>{this.saveCategory(item)}}>Save</button>
-                            <button className = 'btn btn-warning m-1' onClick={()=>{this.setState({selectedID : 0})}}>Cancel</button>
-                        </td>
-                    </tr>
-                )
-            }
+        return this.state.products.map (item => {
+            return this.state.detail.map (detail => {
+                if (item.detail_id === detail.id){
+                    return (
+                        <tr>
+                            <th>{detail.id}</th>
+                            <th>{item.product_name}</th>
+                            <th>{detail.informasi}</th>
+                            <th>{detail.manfaat}</th>
+                            <th>{detail.tips}</th>
+                            <th>
+                                <button>Edit</button>
+                                <button>Delete</button>
+                            </th>
+                        </tr>
+                    )
+                }
+                    return (
+                        <tr>
+                            <th>{item.id}</th>
+                            <th>{item.product_name}</th>
+                            <th><input></input></th>
+                            <th><input></input></th>
+                            <th><input></input></th>
+                            <th>
+                                <button>Add</button>
+                                <button>Delete</button>
+                            </th>
+                        </tr>
+                    )
+            })
         })
-        
     }
 
     render () {
         return (
             <div className="container">
-                <h1 className="display-4 text-center">Manage Category</h1>
+                <h1 className="display-4 text-center">Manage Detail</h1>
                 <table className="table table-hover mb-5">
                     <thead>
                         <tr>
                             <th scope="col">ID</th>
-                            <th scope="col">NAMA CATEGORY</th>
+                            <th scope="col">PRODUCT NAME</th>
+                            <th scope="col">INFORMASI</th>
+                            <th scope="col">MANFAAT</th>
+                            <th scope="col">TIPS & TRICK</th>
+                            <th scope="col">ACTION</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {this.renderInputList()}
                         {this.renderList()}
                     </tbody>
                 </table>

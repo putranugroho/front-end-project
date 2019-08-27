@@ -5,6 +5,7 @@ import classnames from 'classnames';
 
 import ManageProduct from './ManageProduct'
 import ManageCategory from './ManageCategory'
+import ManageDetail from './ManageDetail'
 
 class HomeAdmin extends Component {
 
@@ -54,6 +55,14 @@ class HomeAdmin extends Component {
                             Manage Category
                             </NavLink>
                         </NavItem>
+                        <NavItem>
+                            <NavLink
+                            className={classnames({ active: this.state.activeTab === '3' })}
+                            onClick={() => { this.toggle('3'); }}
+                            >
+                            Manage Detail
+                            </NavLink>
+                        </NavItem>
                         </Nav>
                         <TabContent activeTab={this.state.activeTab}>
                         <TabPane tabId="1">
@@ -67,6 +76,13 @@ class HomeAdmin extends Component {
                             <Row>
                             <Col sm="12">
                                 <ManageCategory/>
+                            </Col>
+                            </Row>
+                        </TabPane>
+                        <TabPane tabId="3">
+                            <Row>
+                            <Col sm="12">
+                                <ManageDetail/>
                             </Col>
                             </Row>
                         </TabPane>

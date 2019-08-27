@@ -38,49 +38,41 @@ class ManageProduct extends Component {
 
     addProduct = () => {
         const product_name = this.product_name.value
-        const category_name = this.category.value
+        const category_id = this.category.value
         const price = this.price.value
         const stock = this.stock.value
+        console.log(this.category.value);
         
-        axios.get('http://localhost:2019/categoryname?category_name='+category_name)
-        .then(res=>{
-            const category_id = res.data.id
-
-            axios.post('http://localhost:2019/addproducts/',
-            {
-                product_name,
-                category_id,
-                price,
-                stock
-            }).then(res=>{
-                console.log("data telah disimpan");
-                console.log(res);
-                this.getProduct()
-            })
+        
+        axios.post('http://localhost:2019/addproducts',
+        {
+            product_name,
+            category_id,
+            price,
+            stock
+        }).then(res=>{
+            console.log("data telah disimpan");
+            console.log(res);
+            this.getProduct()
         })
     }
 
     saveProduct = (item) => {
         const product_name = this.editProduct_name.value
-        const category = this.editCategory.value
+        const category_id = this.editCategory.value
         const price = this.editPrice.value
         const stock = this.editStock.value
         
-        axios.get('http://localhost:2019/categoryname?category_name='+category)
-        .then(res=>{
-            const category_id = res.data.id
-
-            axios.patch('http://localhost:2019/products/'+item,
-            {
-                product_name,
-                category_id,
-                price,
-                stock
-            }).then(res=>{
-                console.log("data telah disimpan");
-                console.log(res);
-                this.getProduct()
-            })
+        axios.patch('http://localhost:2019/products/'+item,
+        {
+            product_name,
+            category_id,
+            price,
+            stock
+        }).then(res=>{
+            console.log("data telah disimpan");
+            console.log(res);
+            this.getProduct()
         })
     }
 
@@ -176,7 +168,6 @@ class ManageProduct extends Component {
                                 {this.renderCategory()}
                         </select>
                     </th>
-                    <th scope='col'></th>
                     <th scope="col"><input ref={input => this.price = input} className="form-control" type="text" /></th>
                     <th scope="col"><input ref={input => this.stock = input} className="form-control" type="text" /></th>
                     <th scope="col"></th>
@@ -260,8 +251,6 @@ class ManageProduct extends Component {
                             <select class="form-control" ref={input => {this.editCategory = input}} defaultValue={item.category_id}>
                                 {this.renderCategory()}
                             </select>
-                        </td>
-                        <td>
                         </td>
                         <td>
                             <input className="form-control" ref={input => {this.editPrice = input}} type="text" defaultValue={item.price}/>

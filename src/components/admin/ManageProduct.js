@@ -134,11 +134,11 @@ class ManageProduct extends Component {
                 )
             }
         })
-    
+
         if(proSearch){
             this.setState({products: proSearch, filter: true})
         }
-        if (catSearch[0]) {
+        if (catSearch) {
             this.setState({category: catSearch, filter: true})
         }
     }

@@ -52,6 +52,35 @@ export const keepLogin = (objUser) => {
     }
 }
 
+export const updateProfile = (id) => {
+    cookie.remove('userName')
+    return (dispatch) => {
+        axios.get(
+            'http://localhost:2019/profile/'+id
+        ).then( res => {
+            if(typeof(res.data) == 'string'){
+                // Print errornya
+                alert('Error: ' + res.data)
+            } else {
+                console.log(res.data);
+                
+            const {id, username, f_name, l_name, email, avatar, age, gender} = res.data[0]
+            // console.log(res.data[0].username + " berhasil login");
+            dispatch(
+                {
+                    type: 'UPDATE_SUCCESS', // untuk menentukan reducer mana yang akan memproses
+                    payload: {
+                        id, username, f_name, l_name, email, avatar, age, gender
+                    } // berisi data yang akan di taruh di state
+                }
+            )
+            // Save data kedalam cookie
+            cookie.set('userName', {id,username,f_name,l_name,email,avatar,age,gender})
+            }
+        })
+    }
+}
+
 export const onLogoutUser = () => {
     cookie.remove('userName')
     return {

@@ -14,11 +14,12 @@ class ManageProduct extends Component {
             category : [],
             search_cat : [],
             edit: 0,
-            input : false,
             upload : 0,
+            input : false,
             detail : false,
             pro_detail : false,
-            modal: false
+            modal: false,
+            filter: false
         };
     
         this.toggle = this.toggle.bind(this);
@@ -127,36 +128,57 @@ class ManageProduct extends Component {
         })
     }
 
+    resetFilter = () => {
+        return(
+            this.setState({products:this.state.search_pro, category:this.state.search_cat, filter:false})
+        )
+    }
+
     onBtnSearch = () => {
-        const search = this.search.value
-        const searchInput = this.searchInput.value
-        console.log(search);
-        console.log(searchInput);
+        const name = this.nama.value
+        const category = this.category.value
+        const max = parseInt(this.max.value) 
+        const min = parseInt(this.min.value)
+        
+        var proSearch = this.state.search_pro.filter (item => {
+            if(isNaN(min) && isNaN(max)){ // Search by Name
+                return (
+                    item.product_name.toLowerCase().includes(name.toLowerCase())
+                )
+            } else if (isNaN(min)){ // Name and Max
+                return (
+                    item.product_name.toLowerCase().includes(name.toLowerCase())
+                    &&
+                    item.price <= max
+                )
+            } else if (isNaN(max)){ // Name and Max
+                return (
+                    item.product_name.toLowerCase().includes(name.toLowerCase())
+                    &&
+                    item.price >= min
+                )
+            } else if (item.price <= max && item.price >= min){
+                return (
+                    item.product_name.toLowerCase().includes(name.toLowerCase())
+                    &&
+                    (item.price <= max && item.price >= min)
+                )
+            }
+        })
 
-
-
-        if(this.search.value === "Product Name"){
-            var proSearch = this.state.search_pro.filter (item => {
-                if(searchInput){
-                    return(
-                        item.product_name.toLowerCase().includes(searchInput.toLowerCase())
-                    )
-                }
-            })
+        var catSearch = this.state.search_cat.filter (item => {
+            if(category){
+                return(
+                    item.category_name.toLowerCase().includes(category.toLowerCase())
+                )
+            }
+        })
     
-            this.setState({products: proSearch})
-            this.setState({category: this.state.search_cat})
-        }else if(this.search.value === "Category"){
-            var catSearch = this.state.search_cat.filter (item => {
-                if(searchInput){
-                    return(
-                        item.category_name.toLowerCase().includes(searchInput.toLowerCase())
-                    )
-                }
-            })
-    
-            this.setState({category: catSearch})
-            this.setState({products: this.state.search_pro})
+        if(proSearch){
+            this.setState({products: proSearch, filter: true})
+        }
+        if (catSearch[0]) {
+            this.setState({category: catSearch, filter: true})
         }
     }
 
@@ -306,7 +328,6 @@ class ManageProduct extends Component {
                             </tr>
                         )
                     }
-                    return console.log("");
                 }
                 )
             } else {
@@ -345,50 +366,111 @@ class ManageProduct extends Component {
     render () {
     if(this.props.user.username === ''){
         return <h1> L o a d i n g . . . </h1>
-    }
-    return (
-        <div className="container mt-3">
-            <h1 className="display-4 text-center">List Product</h1>
-            <div className="row">
-                <select class="col-3 m-1 form-control" ref={input => {this.search = input}}>
-                    <option>Product Name</option>
-                    <option>Category</option>
-                </select>
-                <input className="col-4 m-1" ref={input => {this.searchInput = input}}></input>
-                <button className="col-2 m-1"onClick={this.onBtnSearch}>Search</button>
-                <button className="col-2 m-1 btn btn-outline-warning" onClick={()=>this.setState({input : !this.state.input})}>New Product</button>
+    } else {
+        if(this.state.filter){
+            return (
+                <div className="container mt-3">
+                    <h1 className="display-4 text-center">List Product</h1>
+                    <div class="input-group mb-3">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text" id="basic-addon1">Nama Product</span>
+                        </div>
+                        <input type="text" class="form-control" ref={input => {this.nama = input}} placeholder="Nama product disini" aria-describedby="basic-addon1"/>
+                        <div class="input-group-prepend">
+                            <span class="input-group-text ml-2" id="basic-addon1">Category</span>
+                        </div>
+                        <input type="text" class="form-control" ref={input => {this.category = input}} placeholder="Category product disini" aria-describedby="basic-addon1"/>
+                        <div class="input-group-prepend">
+                            <span class="input-group-text ml-2" id="basic-addon1">Harga</span>
+                        </div>
+                        <input type="text" class="form-control" ref={input => {this.min = input}} placeholder="Masukan harga minimal product" aria-describedby="basic-addon1"/>
+                        <input type="text" class="form-control" ref={input => {this.max = input}} placeholder="Masukan harga maximal product" aria-describedby="basic-addon1"/>
+                        <button className='btn btn-success ml-2' onClick={this.onBtnSearch}>Search</button>
+                        <img className='ml-2' style={{width: 35, height: 35}} alt='' src='https://image.flaticon.com/icons/svg/291/291202.svg' onClick={this.resetFilter} />
+                    </div>
+                    <br></br>
+                    <table className="table table-hover mb-5">
+                        <thead>
+                            <tr>
+                                <th scope="col">ID</th>
+                                <th scope="col">PRODUCT NAME</th>
+                                <th scope="col">CATEGORY</th>
+                                <th scope="col">DESC</th>
+                                <th scope="col">PRICE</th>
+                                <th scope="col">STOCK</th>
+                                <th scope="col">PICTURE</th>
+                                <th scope="col">ACTION</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {this.renderInputList()}
+                            {this.renderList()}
+                        </tbody>
+                    </table>
+                    <Modal isOpen={this.state.modal} toggle={this.toggle} className={this.props.className}>
+                        <ModalHeader toggle={this.toggle}>List Product</ModalHeader>
+                        <ModalBody>
+                        {this.renderDetail()}
+                        </ModalBody>
+                        <ModalFooter>
+                            <Button color="primary" onClick={this.toggle}>Do Something</Button>{' '}
+                            <Button color="secondary" onClick={this.toggle}>Cancel</Button>
+                        </ModalFooter>
+                    </Modal>
+                </div>
+            )
+        }
+        return (
+            <div className="container mt-3">
+                <h1 className="display-4 text-center">List Product</h1>
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text" id="basic-addon1">Nama Product</span>
+                    </div>
+                    <input type="text" class="form-control" ref={input => {this.nama = input}} placeholder="Nama product disini" defaultValue='' aria-describedby="basic-addon1"/>
+                    <div class="input-group-prepend">
+                        <span class="input-group-text ml-2" id="basic-addon1">Category</span>
+                    </div>
+                    <input type="text" class="form-control" ref={input => {this.category = input}} placeholder="Category product disini" defaultValue='' aria-describedby="basic-addon1"/>
+                    <div class="input-group-prepend">
+                        <span class="input-group-text ml-2" id="basic-addon1">Harga</span>
+                    </div>
+                    <input type="text" class="form-control" ref={input => {this.min = input}} placeholder="Masukan harga minimal product" defaultValue='' aria-describedby="basic-addon1"/>
+                    <input type="text" class="form-control" ref={input => {this.max = input}} placeholder="Masukan harga maximal product" defaultValue='' aria-describedby="basic-addon1"/>
+                    <button className='btn btn-success ml-2' onClick={this.onBtnSearch}>Search</button>
+                </div>
+                <br></br>
+                <table className="table table-hover mb-5">
+                    <thead>
+                        <tr>
+                            <th scope="col">ID</th>
+                            <th scope="col">PRODUCT NAME</th>
+                            <th scope="col">CATEGORY</th>
+                            <th scope="col">DESC</th>
+                            <th scope="col">PRICE</th>
+                            <th scope="col">STOCK</th>
+                            <th scope="col">PICTURE</th>
+                            <th scope="col">ACTION</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {this.renderInputList()}
+                        {this.renderList()}
+                    </tbody>
+                </table>
+                <Modal isOpen={this.state.modal} toggle={this.toggle} className={this.props.className}>
+                    <ModalHeader toggle={this.toggle}>List Product</ModalHeader>
+                    <ModalBody>
+                    {this.renderDetail()}
+                    </ModalBody>
+                    <ModalFooter>
+                        <Button color="primary" onClick={this.toggle}>Do Something</Button>{' '}
+                        <Button color="secondary" onClick={this.toggle}>Cancel</Button>
+                    </ModalFooter>
+                </Modal>
             </div>
-            <br></br>
-            <table className="table table-hover mb-5">
-                <thead>
-                    <tr>
-                        <th scope="col">ID</th>
-                        <th scope="col">PRODUCT NAME</th>
-                        <th scope="col">CATEGORY</th>
-                        <th scope="col">DESC</th>
-                        <th scope="col">PRICE</th>
-                        <th scope="col">STOCK</th>
-                        <th scope="col">PICTURE</th>
-                        <th scope="col">ACTION</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {this.renderInputList()}
-                    {this.renderList()}
-                </tbody>
-            </table>
-            <Modal isOpen={this.state.modal} toggle={this.toggle} className={this.props.className}>
-                <ModalHeader toggle={this.toggle}>List Product</ModalHeader>
-                <ModalBody>
-                {this.renderDetail()}
-                </ModalBody>
-                <ModalFooter>
-                    <Button color="primary" onClick={this.toggle}>Do Something</Button>{' '}
-                    <Button color="secondary" onClick={this.toggle}>Cancel</Button>
-                </ModalFooter>
-            </Modal>
-        </div>
-    )
+        )  
+    }
     }
 
 }

@@ -37,7 +37,6 @@ class Header extends Component {
 
     render () {
         if(this.props.user.username === ''){
-            // Render ketika belum login
             return (
                 <div className="container">
                     <div className="row">
@@ -119,9 +118,7 @@ class Header extends Component {
                 </div>
             </div>
             </div>
-            
-                    
-            );
+        );
     }
 }
 

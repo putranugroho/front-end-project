@@ -10,6 +10,7 @@ import Slider from './Slider'
 import Product from './Product'
 import ManageProduct from './admin/ManageProduct'
 import HomeAdmin from './admin/HomeAdmin'
+import LoginAdmin from './admin/LoginAdmin'
 import Login from './Login'
 import Profile from './Profile'
 import Blog from './Blog'
@@ -50,6 +51,7 @@ class App extends React.Component{
                     <Route path='/event' component={Event}/>
                     <Route path='/detailproduct/:product_id' component={detailProduct}/>
                     <Route path='/admin' component={HomeAdmin}/>
+                    <Route path='/loginadmin' component={LoginAdmin}/>
                     {/* <Route path='/checkout' component={checkOut}/> */}
                     {/* <Footer/> */}
                 </div>

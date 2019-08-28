@@ -76,9 +76,7 @@ class Product extends Component {
   renderProduct = () => {
     return this.state.products.map(item => { // hasil map = item{id,name,desc,price,src}
         return (
-          <div>
-            <ProductSlider items={item}/>
-          </div>
+            <ProductSlider item={item}/>
         )
     })
   }
@@ -130,34 +128,37 @@ class Product extends Component {
           {this.renderList()}
         </div>
       )
-
-    //     <InfiniteCarousel
-    //       breakpoints={[
-    //         {
-    //           breakpoint: 500,
-    //           settings: {
-    //             slidesToShow: 3,
-    //             slidesToScroll: 1,
-    //           },
-    //         },
-    //         {
-    //           breakpoint: 768,
-    //           settings: {
-    //             slidesToShow: 3,
-    //             slidesToScroll: 1,
-    //           },
-    //         },
-    //       ]}
-    //       dots={true}
-    //       showSides={true}
-    //       sidesOpacity={.5}
-    //       sideSize={.1}
-    //       slidesToScroll={1}
-    //       slidesToShow={4}
-    //       scrollOnDevice={true}
-    //     >          
-    //       {this.renderProduct()}
-    //     </InfiniteCarousel>
+        
+    //   <InfiniteCarousel
+    //   breakpoints={[
+    //     {
+    //       breakpoint: 500,
+    //       settings: {
+    //         slidesToShow: 3,
+    //         slidesToScroll: 1,
+    //       },
+    //     },
+    //     {
+    //       breakpoint: 768,
+    //       settings: {
+    //         slidesToShow: 3,
+    //         slidesToScroll: 1,
+    //       },
+    //     },
+    //   ]}
+    //   dots={true}
+    //   showSides={true}
+    //   sidesOpacity={.5}
+    //   sideSize={.1}
+    //   slidesToScroll={1}
+    //   slidesToShow={5}
+    //   scrollOnDevice={true}
+    // >          
+    
+    //   {this.renderProduct()}
+    
+    // </InfiniteCarousel>
+    
   }
 }
 

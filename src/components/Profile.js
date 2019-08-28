@@ -3,7 +3,6 @@ import axios from 'axios'
 import { Jumbotron } from 'reactstrap'
 import { connect } from 'react-redux'
 import { Redirect } from 'react-router-dom'
-import cookie from 'universal-cookie'
 
 import {updateProfile} from '../action'
 
@@ -11,6 +10,30 @@ class Profile extends Component {
     state = {
         edit : false,
         upload : false
+    }
+
+    saveProfile = (id) => {
+        const username = this.username.value
+        const f_name = this.f_name.value
+        const l_name = this.l_name.value
+        const email = this.email.value
+        const age = this.age.value
+        const gender = this.gender.value
+        
+        axios.patch('http://localhost:2019/users/profile/'+id,
+        {
+            username,
+            f_name,
+            l_name,
+            email,
+            age,
+            gender
+        }).then(res=>{
+            console.log("data telah disimpan");
+            console.log(res);
+            this.props.updateProfile(id)
+            this.setState({edit:false})
+        })
     }
 
     uploadImage = (id) => {
@@ -73,45 +96,49 @@ class Profile extends Component {
         return (
             <div className="col-sm-6 m-2">
                 <form>
+                    <div class="mb-3">
+                        <label for="username">Username</label>
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                            <span class="input-group-text">@</span>
+                            </div>
+                            <input type="text" class="form-control" ref={input => {this.username = input} } defaultValue={username}/>
+                        </div>
+                    </div>
+
                 <div class="row">
                     <div class="col-md-6 mb-3">
                         <label for="firstName">First name</label>
-                        <input type="text" class="form-control" id="firstName" placeholder="" value="" required=""/>
+                        <input type="text" class="form-control" ref={input => {this.f_name = input} } defaultValue={f_name}/>
                     </div>
                     <div class="col-md-6 mb-3">
                         <label for="lastName">Last name</label>
-                        <input type="text" class="form-control" id="lastName" placeholder="" value="" required=""/>
-                    </div>
-                </div>
-
-                <div class="mb-3">
-                    <label for="username">Username</label>
-                    <div class="input-group">
-                        <div class="input-group-prepend">
-                        <span class="input-group-text">@</span>
-                        </div>
-                        <input type="text" class="form-control" id="username" placeholder="Username" required=""/>
+                        <input type="text" class="form-control" ref={input => {this.l_name = input} } defaultValue={l_name}/>
                     </div>
                 </div>
 
                 <div class="mb-3">
                     <label for="email">Email</label>
-                    <input type="email" class="form-control" id="email" placeholder="you@example.com"/>
+                    <input type="email" class="form-control" ref={input => {this.email = input} } defaultValue={email}/>
                 </div>
 
                 <div class="mb-3">
                     <label for="address">Age</label>
-                    <input type="text" class="form-control" id="address" placeholder="69 Years Old" required=""/>
+                    <input type="number" class="form-control" ref={input => {this.age = input} } defaultValue={age}/>
                 </div>
 
                 <div class="mb-3">
                     <label for="address">Gender</label>
-                    <input type="text" class="form-control" id="address" placeholder="Male / Female" required=""/>
+                    <select class="form-control" ref={input => {this.gender = input} }  defaultValue={gender}>
+                        <option value='M'>Male</option>
+                        <option value='F'>Female</option>
+                        <option>She-Male</option>
+                    </select>
                 </div>
 
                 </form>
                 <p className='text-center'>
-                <button className="btn btn-primary m-3" onClick={() => this.saveProfile()} >Save</button>
+                <button className="btn btn-primary m-3" onClick={() => this.saveProfile(id)} >Save</button>
                 <button className="btn btn-primary m-3" onClick={() => this.setState({edit:!this.state.edit})} >Cancel</button>
                 </p>
             </div>
@@ -119,31 +146,40 @@ class Profile extends Component {
         } else {
             return(
             <div className="col-sm-6 m-2">
-            <h1 className="display-3">Hello, {username} </h1>
-            <div className='row'>
-                <h6>
-                <label className='col-4'>FULLNAME</label>
-                <label className='col-2 text-left'>:</label>
-                <label className='col-3'>{f_name}</label>
-                <label className='col-3'>{l_name}</label>
-                </h6>
-            </div>
-            <div className='row'>
-                <label className='col-4'>Email : </label>
-                <label className='col-4'>{email}</label>
-            </div>
-            <div className='row'>
-                <label className='col-4'>Age : </label>
-                <label className='col-4'>{age}</label>
-            </div>
-            <div className='row'>
-                <label className='col-4'>Gender : </label>
-                <label className='col-4'>{gender}</label>
-            </div>
+            <form>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="firstName">First name</label>
+                        <input type="text" class="form-control" defaultValue={f_name} disabled/>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="lastName">Last name</label>
+                        <input type="text" class="form-control" defaultValue={l_name} disabled/>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="email">Email</label>
+                    <input type="email" class="form-control" defaultValue={email} disabled/>
+                </div>
+
+                <div class="mb-3">
+                    <label for="address">Age</label>
+                    <input type="number" class="form-control" defaultValue={age} disabled/>
+                </div>
+
+                <div class="mb-3">
+                    <label for="address">Gender</label>
+                    <select class="form-control" ref={input => {this.gender = input} }  defaultValue={gender} disabled>
+                        <option value='M'>Male</option>
+                        <option value='F'>Female</option>
+                        <option>She-Male</option>
+                    </select>
+                </div>
+            </form>
             <button className="btn btn-primary my-3" onClick={() => this.setState({edit:!this.state.edit})} >EDIT</button>
             </div>
             )
-
         }
     }
 
@@ -151,7 +187,9 @@ class Profile extends Component {
         if(this.props.user.username !== ''){
             return (
                 <Jumbotron>
-                    <div className="container">
+                    <div className="container">            
+                        <h1 className="display-3 text-center">Hello, @ {this.props.user.username} </h1>
+                        <br></br>
                         <div className="row">
                             {this.renderImage()}
                             <div className='col-1'></div>
@@ -161,7 +199,7 @@ class Profile extends Component {
                 </Jumbotron>
             )
         }
-        return <Redirect to='/'/>
+        return <h1>L o a d i n g . . .</h1>
     }
 }
 

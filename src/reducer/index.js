@@ -12,6 +12,11 @@ const init = {
     gender: ''
 }
 
+const state = {
+    id: '',
+    username: ''
+}
+
 const AuthReducer = (data = init, action) => {
     switch (action.type) {
         case "LOGIN_SUCCESS":
@@ -39,10 +44,31 @@ const AuthReducer = (data = init, action) => {
     }
 }
 
+const AdminReducer = (data = state, action) => {
+    switch (action.type) {
+        case "LOGIN_ADMIN":
+            return {
+                ...data,
+                id: action.payload.id,
+                username: action.payload.username
+            }
+
+        case "LOGOUT_ADMIN":
+            return {
+                ...data,
+                id: "",
+                username: ""
+            }
+    
+        default:
+            return data
+    }
+}
 
 // combineReducers akan return sesuatu, yang akan di export
 export default combineReducers(
     { 
-        auth : AuthReducer
+        auth : AuthReducer,
+        admin : AdminReducer
     }
 )

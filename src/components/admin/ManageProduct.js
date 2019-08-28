@@ -272,9 +272,6 @@ class ManageProduct extends Component {
     }
 
     render () {
-    if(this.props.user.username === ''){
-        return <h1> L o a d i n g . . . </h1>
-    } else {
         if(this.state.filter){
             return (
                 <div className="container mt-3">
@@ -359,8 +356,6 @@ class ManageProduct extends Component {
             </div>
         )  
     }
-    }
-
 }
 
 const mapStatetoProps = state => {

@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, Redirect } from 'react-router-dom'
+import { connect } from 'react-redux'
 import { TabContent, TabPane, Nav, NavItem, NavLink, Card, Button, CardTitle, CardText, Row, Col } from 'reactstrap';
 import classnames from 'classnames';
 
@@ -93,6 +94,7 @@ class HomeAdmin extends Component {
     }
 
     render() {
+        if (this.props.admin.username !== '') {
         return (
         <div>
             <div class="container-fluid">
@@ -142,13 +144,18 @@ class HomeAdmin extends Component {
                     </nav>
                     {this.renderlistInput()}
                 </div>
-                
             </div>
-            
         </div>
-        
         )
+        }
+        return <Redirect to='/loginadmin'/>
     }
 }
 
-export default HomeAdmin
+const mapStatetoProps = state => {
+    return {
+        admin: state.admin
+    }
+}
+
+export default connect(mapStatetoProps)(HomeAdmin)

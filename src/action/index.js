@@ -104,7 +104,7 @@ export const onLoginAdmin = (username, password) => {
                 // Print errornya
                 alert('Error: ' + res.data)
             } else {
-                console.log(res.data);
+            console.log(res.data);
                 
             const {id, username} = res.data
             // console.log(res.data[0].username + " berhasil login");

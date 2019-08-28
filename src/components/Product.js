@@ -58,6 +58,8 @@ class Product extends Component {
 
   renderCategory = () => {
     return this.state.products.map(item => { // hasil map = item{id,name,desc,price,src}
+      const latest = this.state.products.length - 4
+
       if(item.category_id === this.state.category)  
       {
         return (
@@ -65,11 +67,13 @@ class Product extends Component {
         )
       }
 
-      if(this.state.category === 0){
-        return (
-          <ProductItem items={item}/>
-        )
-      } 
+      if(item.id > latest){
+        if(this.state.category === 0){
+          return (
+            <ProductItem items={item}/>
+          )
+        }
+      }
     })
   }
 

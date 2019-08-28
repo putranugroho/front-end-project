@@ -17,7 +17,8 @@ class Login extends Component {
     }
         
     render () {
-        if (this.props.user.username === '') {
+        if (this.props.admin.username === '') {
+            if (this.props.user.username === '') {
             return (
                 <div> 
                     <div className='mt-3 row'> 
@@ -48,13 +49,19 @@ class Login extends Component {
                 </div>
             )
         }
-        return <Redirect to='/'/>
+            return <Redirect to='/'/>
+    }
+        return (
+            alert('Silahkan Logout Admin dahulu'),
+            <Redirect to='/admin'/>
+        )
     }
 }
 
 const mapStateToProps = state => {
     return {
-        user: state.auth // {id, username}
+        user: state.auth,
+        admin: state.admin
     }
 }
 

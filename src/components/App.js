@@ -19,7 +19,7 @@ import detailProduct from './DetailProduct'
 // import checkOut from './checkout'
 // import Footer from './Footer'
 
-import { keepLogin } from '../action'
+import { keepLogin, keepAdmin } from '../action'
 
 const cookie = new cookies()
 
@@ -28,11 +28,16 @@ class App extends React.Component{
     componentDidMount(){
         // Check cookie
         const objCookie = cookie.get("userName")
+        const objAdmin = cookie.get('Admin')
 
         if (objCookie !== undefined) {
-            // Login ulang
             this.props.keepLogin(objCookie)
         }
+        
+        if (objAdmin !== undefined) {
+            this.props.keepAdmin(objAdmin)
+        }
+
     }
 
     render() {
@@ -45,7 +50,6 @@ class App extends React.Component{
                     <Route path='/' exact component={Slider}/>
                     <Route path='/' exact component={Home}/>
                     <Route path='/product' exact component={Product}/>
-                    <Route path='/manageproduct' component={ManageProduct}/>
                     <Route path='/profile' component={Profile}/>
                     <Route path='/blog' component={Blog}/>
                     <Route path='/event' component={Event}/>
@@ -60,4 +64,4 @@ class App extends React.Component{
     }
 }
 
-export default connect(null, {keepLogin})(App)
+export default connect(null, {keepLogin,keepAdmin})(App)

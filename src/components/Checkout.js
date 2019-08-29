@@ -303,6 +303,26 @@ class checkout extends Component {
         })
     }
 
+    totalHarga = () => { // Menjumlahkan Harga barang yang dibeli user
+        var total = 0
+
+        for (let i = 0; i < this.state.cart.length; i++) {
+            if (this.state.cart[i].users_id === this.props.user.id) {
+                for (let j = 0; j < this.state.product.length; j++) {
+                    if (this.state.cart[i].products_id === this.state.product[j].id) {
+                    const jumlah = this.state.cart[i].qty * this.state.product[j].price
+                    total = total + jumlah
+                    
+                    }
+                }                
+            }
+        }
+
+        return (
+            total
+        )
+    }
+
     render() {
         return (
         <div className='container mt-2 mb-5'>
@@ -315,8 +335,8 @@ class checkout extends Component {
                 <ul class="list-group mb-3">
                     {this.renderCart()}
                     <li class="list-group-item d-flex justify-content-between">
-                    <span>Total (USD)</span>
-                    <strong>$20</strong>
+                    <span>Total (IDR)</span>
+                    <strong>Rp. {this.totalHarga()}</strong>
                     </li>
                 </ul>
                 </div>

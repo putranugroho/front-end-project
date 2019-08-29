@@ -257,8 +257,8 @@ class Header extends Component {
                         </div>
                     </ModalBody>
                     <ModalFooter>
-                    <Link to='/checkout' onClick={this.toggle}>
-                    <Button color="primary">Pembayaran</Button>{' '}
+                    <Link to='/checkout' onClick={this.toggleModal}>
+                    <Button color="primary" >Pembayaran</Button>{' '}
                     </Link>
                     </ModalFooter>
                 </Modal>

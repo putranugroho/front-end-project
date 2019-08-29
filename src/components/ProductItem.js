@@ -3,11 +3,29 @@ import { Link, Redirect } from 'react-router-dom'
 import axios from 'axios'
 import {connect} from 'react-redux'
 
+import Login from './Login'
+
 class ProductItem extends Component {
+    
+    state = {
+        redirect: false
+    }
+    
+    setRedirect = () => {
+        this.setState({
+            redirect: true
+        })
+    }
 
     refresh = (reload) => {
         document.location.reload(reload)
     }
+
+    renderRedirect = () => {
+        if (this.state.redirect) {
+          return <Redirect to='/login' />
+        }
+      }
 
     addToCart = () => {
         const user_id = this.props.user.id
@@ -50,14 +68,13 @@ class ProductItem extends Component {
             if(user_id === ""){ // memunculkan alert jika blom login
                 return (
                     alert('Silahkan login terlebih dahulu untuk melanjutkan transaksi'),
-                    <Redirect to='/login'/>
+                    this.setRedirect()
                 )
                 
                 
             } else{ // memunculkan alert jika belom memasukan qty
                 alert('masukan jumlah barang yang ingin dibeli')
-            }
-            
+            }            
         }
         return (
             this.qty.value = 0
@@ -78,6 +95,7 @@ class ProductItem extends Component {
                             </Link>
                             <button className='btn btn-primary btn-block' onClick={()=>{this.addToCart(this.props.items)}} >Add To Cart</button>
                         </div>
+                        {this.renderRedirect()}
                 </div>
             )
     }

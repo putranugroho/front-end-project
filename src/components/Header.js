@@ -211,7 +211,7 @@ class Header extends Component {
                         <NavItem className='text-center align-self-center'>
                         <Button color="success" onClick={this.toggleModal}>
                             <i class="fa fa-shopping-cart"></i> <b style={{color:'white'}}>Cart</b>
-                            <span class="badge badge-light m-1">{this.state.badge}</span>
+                            {/* <span class="badge badge-light m-1">{this.state.badge}</span> */}
                         </Button>
                         </NavItem>
                         <UncontrolledDropdown nav inNavbar>
@@ -257,8 +257,9 @@ class Header extends Component {
                         </div>
                     </ModalBody>
                     <ModalFooter>
-                    <Button color="primary" onClick={this.toggle}>Do Something</Button>{' '}
-                    <Button color="secondary" onClick={this.toggle}>Cancel</Button>
+                    <Link to='/checkout' onClick={this.toggle}>
+                    <Button color="primary">Pembayaran</Button>{' '}
+                    </Link>
                     </ModalFooter>
                 </Modal>
                 </div>

@@ -8,7 +8,16 @@ class checkout extends Component {
         super(props);
         this.state = {
             alamat: [],
-            selectedID:0,
+            select: [],
+            payment: [],
+            shipping: [],
+            cart : [],
+            product : [],
+            detail : [],
+            badge : 0,
+            selectPay: 0,
+            selectedID: 0,
+            input : false,
             modal: false
         };
     
@@ -17,36 +26,97 @@ class checkout extends Component {
 
     componentDidMount(){
         this.getAddress()
+        this.getSelected()
+        this.getPayment()
+        this.getShipping()
+        this.getCart()
+        this.getProduct()
+        this.getDetail()
+    }
+
+    getProduct = () => {
+        axios.get('http://localhost:2019/products')
+            .then(res => {
+               this.setState({product: res.data})
+            })
+    }
+
+    getDetail = () => {
+        axios.get('http://localhost:2019/detail')
+            .then(res => {
+               this.setState({detail: res.data})
+            })
+    }
+
+    getCart = () => {
+        axios.get('http://localhost:2019/cart')
+        .then(res => {
+            this.setState({cart: res.data})
+            this.getBadge()
+        })
     }
 
     getSelected = () => {
-        
+        axios.get('http://localhost:2019/select/')
+        .then(res => {
+            this.setState({select: res.data})
+        })
     }
-
+    
     getAddress = () => {
         axios.get('http://localhost:2019/address')
         .then(res => {
             this.setState({alamat: res.data})
         })
     }
+    
+    getShipping = () => {
+        axios.get('http://localhost:2019/shipping')
+        .then(res => {
+            this.setState({shipping: res.data})
+        })
+    }
+    
+    getPayment = () => {
+        axios.get('http://localhost:2019/payment')
+        .then(res => {
+            this.setState({payment: res.data})
+        })
+    }
 
+    getBadge = () => {
+        this.state.cart.map(cart => {
+            if (cart.users_id === this.props.user.id) {
+                this.setState({badge : this.state.badge+1})       
+            }
+        })
+    }
+        
     toggle() {
         this.setState(prevState => ({
             modal: !prevState.modal
         }));
     }
 
-    selectedAddress = () =>{
-        
+    selectedAddress = (id) =>{
+        return this.state.select.map(select=>{
+            if(select.user_id === this.props.user.id){
+                axios.get('http://localhost:2019/addressselected/' + select.id + '/' + id)
+                .then(res => {
+                    alert('Alamat telah dirubah')
+                    this.setState({modal:false})
+                    this.getAddress()
+                    this.getSelected()
+                    this.setState({selectedID:select.id})
+                })
+            }
+        })
     }
 
     selectAlamat = () => {
         return this.state.alamat.map( add => {
-            console.log(this.state.selectedID);
-            
             if (add.user_id === this.props.user.id) {
                 if (add.selected === 1) {
-                    this.setState({selectedID:add.id})
                     return (
                         <div className='container mb-3'  style={{borderStyle:"solid", borderColor:'lime'}}>
                             <div className='row'>
@@ -56,7 +126,6 @@ class checkout extends Component {
                                     <p>{add.kota} | {add.kode_pos}</p>
                                 </div>
                                 <div className='col-4'>
-
                                 </div>
                             </div>
                         </div>
@@ -71,7 +140,7 @@ class checkout extends Component {
                                 <p>{add.kota} | {add.kode_pos}</p>
                             </div>
                             <div className='col-4 align-self-center'>
-                                <Button color='success' onClick>Pilih Alamat</Button>
+                                <Button color='success' onClick={()=>{this.selectedAddress(add.id)}}>Pilih Alamat</Button>
                             </div>
                         </div>
                     </div>
@@ -81,184 +150,215 @@ class checkout extends Component {
     }
 
     renderAlamat = () => {
-        return this.state.alamat.map( add => {
-            if (add.user_id === this.props.user.id) {
-                if (add.selected === 1) {
-                    return (
-                        <div>
-                            <p><b>{add.penerima}</b>  ({add.label})</p>
-                            <p>{add.alamat}</p>
-                            <p>{add.kota} | {add.kode_pos}</p>
-                        </div>
-                    )    
+        if (this.state.input === false) {
+            return this.state.alamat.map( add => {
+                if (add.user_id === this.props.user.id) {
+                    if (add.selected === 1) {
+                        return (
+                            <div>
+                                <p><b>{add.penerima}</b>  ({add.label})</p>
+                                <p>{add.alamat}</p>
+                                <p>{add.kota} | {add.kode_pos}</p>
+                                <hr class="mb-4"></hr>
+                            </div>
+                        )    
+                    }
                 }
-                
+            })   
+        }
+    }
+
+    inputAddress = () => {
+        if(this.state.input === true){
+            return (
+                <form>
+                    <div class="mb-3">
+                        <label for="email">Label Alamat</label>
+                        <input type="email" class="form-control" ref={input => {this.label = input} }/>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="firstName">Nama Penerima</label>
+                            <input type="text" class="form-control" ref={input => {this.penerima = input} }/>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="lastName">Nomor Handpohone</label>
+                            <input type="number" class="form-control" ref={input => {this.no_hp = input} }/>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-9 mb-3">
+                            <label for="firstName">Kota</label>
+                            <input type="text" class="form-control" ref={input => {this.kota = input} }/>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label for="lastName">Kode Pos</label>
+                            <input type="number" class="form-control" ref={input => {this.kode_pos = input} }/>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="email">Alamat</label>
+                        <input type="email" class="form-control" ref={input => {this.alamat = input} }/>
+                    </div>
+
+                    <div class="mb-3">
+                        <input type="checkbox" value="true" nama='select' ref={input=>{this.selected = input}}/> Jadikan alamat utama ?
+                    </div>
+
+                    <Button className='btn btn-block' onClick={()=>this.addAddress()}>Save</Button>
+                    <hr class="mb-4"></hr>
+                </form>
+            )
+        }
+    }
+
+    addAddress = () => {
+        const user_id = this.props.user.id
+        const label = this.label.value
+        const penerima = this.penerima.value
+        const no_hp = parseInt(this.no_hp.value)
+        const kota = this.kota.value
+        const kode_pos = parseInt(this.kode_pos.value)
+        const alamat = this.alamat.value
+        const selected = this.selected.checked
+        
+            
+        axios.post('http://localhost:2019/addaddress',
+        {
+            user_id,
+            label,
+            penerima,
+            no_hp,
+            kota,
+            kode_pos,
+            alamat,
+            selected
+        }).then(res=>{
+            console.log("data telah disimpan");
+            console.log(res);
+            this.getAddress()
+            this.setState({input:!this.state.input})
+        })
+    }
+
+    renderShipping = () => {
+        return this.state.shipping.map(ship=>{
+            return (
+                <div className='col-3 m-2 align-self-center'>
+                    <input name="paymentMethod" type="radio" />{ship.nama_kurir}
+                </div>
+            )
+        })
+    }
+
+    renderPayment = () => {
+        return this.state.payment.map(pay=>{
+            if(this.state.selectPay === pay.id){
+                return (
+                    <div className='card-body col-3 ' style={{borderStyle:"solid", borderColor:'lime'}} onClick={()=>{this.setState({selectPay:pay.id})}}>
+                        <div className='card-body'>
+                            <h3 className='card-title'>{pay.nama_bank}</h3>
+                            <p className='card-text'>{pay.no_rek}</p>
+                        </div>
+                    </div>
+                )
             }
+            return (
+                <div className='card-body col-3 text-center'  onClick={()=>{this.setState({selectPay:pay.id})}}>
+                    <div className='card-body'>
+                        <h3 className='card-title'>{pay.nama_bank}</h3>
+                        <p className='card-text'>{pay.no_rek}</p>
+                    </div>
+                </div>
+            )
+        })
+    }
+
+    renderCart = () => {
+        return this.state.cart.map (cart => {
+        if(cart.users_id === this.props.user.id){
+            
+            return this.state.product.map (item => {
+            if(cart.products_id === item.id){
+                
+                // return this.state.detail.map (detail => {
+                // if(item.detail_id === detail.id){
+                    return (
+                        <li class="list-group-item d-flex justify-content-between lh-condensed">
+                            <div>
+                                <h6 class="my-0">{item.product_name}</h6>
+                                {/* <small class="text-muted">{detail.informasi}</small> */}
+                            </div>
+                            <span class="text-muted">Rp. {cart.qty * item.price }</span>
+                        </li>
+                    )
+                // }
+                // })
+            }
+            })
+        }
         })
     }
 
     render() {
-            return (
-            <div className='container mt-2 mb-5'>
-                <div class="row">
-                    <div class="col-md-4 order-md-2 mb-4">
-                    <h4 class="d-flex justify-content-between align-items-center mb-3">
-                        <span class="text-muted">Your cart</span>
-                        <span class="badge badge-secondary badge-pill">3</span>
-                    </h4>
-                    <ul class="list-group mb-3">
-                        <li class="list-group-item d-flex justify-content-between lh-condensed">
-                        <div>
-                            <h6 class="my-0">Product name</h6>
-                            <small class="text-muted">Brief description</small>
-                        </div>
-                        <span class="text-muted">$12</span>
-                        </li>
-                        <li class="list-group-item d-flex justify-content-between lh-condensed">
-                        <div>
-                            <h6 class="my-0">Second product</h6>
-                            <small class="text-muted">Brief description</small>
-                        </div>
-                        <span class="text-muted">$8</span>
-                        </li>
-                        <li class="list-group-item d-flex justify-content-between lh-condensed">
-                        <div>
-                            <h6 class="my-0">Third item</h6>
-                            <small class="text-muted">Brief description</small>
-                        </div>
-                        <span class="text-muted">$5</span>
-                        </li>
-                        <li class="list-group-item d-flex justify-content-between">
-                        <span>Total (USD)</span>
-                        <strong>$20</strong>
-                        </li>
-                    </ul>
-                    </div>
-                    <div class="col-md-8 order-md-1">
-                    <h4 class="mb-3">Billing Address</h4>
+        return (
+        <div className='container mt-2 mb-5'>
+            <div class="row">
+                <div class="col-md-4 order-md-2 mb-4">
+                <h4 class="d-flex justify-content-between align-items-center mb-3">
+                    <span class="text-muted">Your cart</span>
+                    <span class="badge badge-secondary badge-pill">{this.state.badge}</span>
+                </h4>
+                <ul class="list-group mb-3">
+                    {this.renderCart()}
+                    <li class="list-group-item d-flex justify-content-between">
+                    <span>Total (USD)</span>
+                    <strong>$20</strong>
+                    </li>
+                </ul>
+                </div>
+                <div class="col-md-8 order-md-1">
+                <h4 class="mb-3 text-center">Billing Address</h4>
+                <hr class="mb-4"></hr>
+                {this.renderAlamat()}
+                {this.inputAddress()}
+                <form class="needs-validation" novalidate="">
+                    <p className="row">
+                        <Button className="col btn btn-secondary m-2" onClick={()=>this.setState({input:!this.state.input})}>Add Address</Button>
+                        <Button className="col btn btn-secondary m-2" onClick={this.toggle}>Select Address</Button>
+                    </p>
+                    <Modal isOpen={this.state.modal} toggle={this.toggle} className={this.props.className}>
+                        <ModalHeader className="align-self-center" toggle={this.toggle}><b>Alamat Pengiriman</b></ModalHeader>
+                        <ModalBody>
+                            {this.selectAlamat()}
+                        </ModalBody>
+                        <ModalFooter>
+                            <Button color="primary" onClick={this.toggle}>Do Something</Button>
+                            <Button color="secondary" onClick={this.toggle}>Cancel</Button>
+                        </ModalFooter>
+                    </Modal>
                     <hr class="mb-4"></hr>
-                    {this.renderAlamat()}
-                    <hr class="mb-4"></hr>
-                    <form class="needs-validation" novalidate="">
-                        <div class="mb-3">
-                        <label for="address">Address</label>
-                        <input type="text" class="form-control" id="address" placeholder="1234 Main St" required=""/>
-                        <div class="invalid-feedback">
-                            Please enter your shipping address.
-                        </div>
-                        </div>
-
-                        <div class="mb-3">
-                        <label for="address2">Address 2 <span class="text-muted">(Optional)</span></label>
-                        <input type="text" class="form-control" id="address2" placeholder="Apartment or suite"/>
-                        </div>
-
-                        <div class="row">
-                        <div class="col-md-5 mb-3">
-                            <label for="country">Country</label>
-                            <select class="custom-select d-block w-100" id="country" required="">
-                            <option value="">Choose...</option>
-                            <option>United States</option>
-                            </select>
-                            <div class="invalid-feedback">
-                            Please select a valid country.
-                            </div>
-                        </div>
-                        <div class="col-md-4 mb-3">
-                            <label for="state">State</label>
-                            <select class="custom-select d-block w-100" id="state" required="">
-                            <option value="">Choose...</option>
-                            <option>California</option>
-                            </select>
-                            <div class="invalid-feedback">
-                            Please provide a valid state.
-                            </div>
-                        </div>
-                        <div class="col-md-3 mb-3">
-                            <label for="zip">Zip</label>
-                            <input type="text" class="form-control" id="zip" placeholder="" required=""/>
-                            <div class="invalid-feedback">
-                            Zip code required.
-                            </div>
-                        </div>
-                        </div>
-                        <hr class="mb-4"></hr>
-                        <p className="row">
-                            <button className="col btn btn-secondary m-2">Add Address</button>
-                            <Button className="col btn btn-secondary m-2" onClick={this.toggle}>Select Address</Button>
-                        </p>
-                        <Modal isOpen={this.state.modal} toggle={this.toggle} className={this.props.className}>
-                            <ModalHeader className="align-self-center" toggle={this.toggle}><b>Alamat Pengiriman</b></ModalHeader>
-                            <ModalBody>
-                                {this.selectAlamat()}
-                            </ModalBody>
-                            <ModalFooter>
-                                <Button color="primary" onClick={this.toggle}>Do Something</Button>
-                                <Button color="secondary" onClick={this.toggle}>Cancel</Button>
-                            </ModalFooter>
-                        </Modal>
-                        <hr class="mb-4"></hr>
-                        
-                        <h4 class="mb-3">Shipping</h4>
-                        
-                        <hr class="mb-4"></hr>
-
-                        <h4 class="mb-3">Payment</h4>
-
-                        <div class="d-block my-3">
-                        <div class="custom-control custom-radio">
-                            <input id="credit" name="paymentMethod" type="radio" class="custom-control-input" checked="" required=""/>
-                            <label class="custom-control-label" for="credit">Credit card</label>
-                        </div>
-                        <div class="custom-control custom-radio">
-                            <input id="debit" name="paymentMethod" type="radio" class="custom-control-input" required=""/>
-                            <label class="custom-control-label" for="debit">Debit card</label>
-                        </div>
-                        <div class="custom-control custom-radio">
-                            <input id="paypal" name="paymentMethod" type="radio" class="custom-control-input" required=""/>
-                            <label class="custom-control-label" for="paypal">Paypal</label>
-                        </div>
-                        </div>
-                        <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label for="cc-name">Name on card</label>
-                            <input type="text" class="form-control" id="cc-name" placeholder="" required=""/>
-                            <small class="text-muted">Full name as displayed on card</small>
-                            <div class="invalid-feedback">
-                            Name on card is required
-                            </div>
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label for="cc-number">Credit card number</label>
-                            <input type="text" class="form-control" id="cc-number" placeholder="" required=""/>
-                            <div class="invalid-feedback">
-                            Credit card number is required
-                            </div>
-                        </div>
-                        </div>
-                        <div class="row">
-                        <div class="col-md-3 mb-3">
-                            <label for="cc-expiration">Expiration</label>
-                            <input type="text" class="form-control" id="cc-expiration" placeholder="" required=""/>
-                            <div class="invalid-feedback">
-                            Expiration date required
-                            </div>
-                        </div>
-                        <div class="col-md-3 mb-3">
-                            <label for="cc-expiration">CVV</label>
-                            <input type="text" class="form-control" id="cc-cvv" placeholder="" required=""/>
-                            <div class="invalid-feedback">
-                            Security code required
-                            </div>
-                        </div>
-                        </div>
-                        <hr class="mb-4"></hr>
-                        <button class="btn btn-primary btn-lg btn-block" type="submit">Continue to checkout</button>
-                    </form>
+                    
+                    <h4 class="mb-3 text-center align-self-center">Shipping</h4>
+                    <div class="row">
+                        {this.renderShipping()}
                     </div>
+                    <hr class="mb-4"></hr>
+
+                    <h4 class="mb-3 text-center ">Payment</h4>
+                    <div className='row'>
+                        {this.renderPayment()}
+                    </div>
+                    <hr class="mb-4"></hr>
+                    <button class="btn btn-primary btn-lg btn-block" type="submit">Continue to checkout</button>
+                </form>
                 </div>
             </div>
-            )
+        </div>
+        )
     }
 }
 

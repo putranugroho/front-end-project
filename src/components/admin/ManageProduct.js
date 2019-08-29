@@ -122,10 +122,12 @@ class ManageProduct extends Component {
                 return (
                     item.product_name.toLowerCase().includes(name.toLowerCase())
                     &&
-                    (item.price <= max && item.price >= min)
+                    item.price <= max && item.price >= min
                 )
             }
         })
+
+        
 
         var catSearch = this.state.search_cat.filter (item => {
             if(category){
@@ -135,12 +137,14 @@ class ManageProduct extends Component {
             }
         })
 
-        if(proSearch){
-            this.setState({products: proSearch, filter: true})
-        }
-        if (catSearch) {
+        if (catSearch[0]) {
             this.setState({category: catSearch, filter: true})
         }
+        if (proSearch[0]) {
+            this.setState({products: proSearch, filter: true})
+        }
+
+        
     }
 
     deleteProduct = (item) => {

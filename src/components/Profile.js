@@ -2,7 +2,6 @@ import React, { Component } from 'react'
 import axios from 'axios'
 import { Jumbotron } from 'reactstrap'
 import { connect } from 'react-redux'
-import { Redirect } from 'react-router-dom'
 
 import {updateProfile} from '../action'
 
@@ -96,16 +95,6 @@ class Profile extends Component {
         return (
             <div className="col-sm-6 m-2">
                 <form>
-                    <div class="mb-3">
-                        <label for="username">Username</label>
-                        <div class="input-group">
-                            <div class="input-group-prepend">
-                            <span class="input-group-text">@</span>
-                            </div>
-                            <input type="text" class="form-control" ref={input => {this.username = input} } defaultValue={username}/>
-                        </div>
-                    </div>
-
                 <div class="row">
                     <div class="col-md-6 mb-3">
                         <label for="firstName">First name</label>

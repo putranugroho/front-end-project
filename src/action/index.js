@@ -17,8 +17,7 @@ export const onLoginUser = (username, password) => {
                 // Print errornya
                 alert('Error: ' + res.data)
             } else {
-                console.log(res.data);
-                
+                alert('login berhasil')
             const {id, username, f_name, l_name, email, avatar, age, gender} = res.data
             // console.log(res.data[0].username + " berhasil login");
             dispatch(
@@ -62,8 +61,7 @@ export const updateProfile = (id) => {
                 // Print errornya
                 alert('Error: ' + res.data)
             } else {
-                console.log(res.data);
-                
+                alert('Update berhasil')
             const {id, username, f_name, l_name, email, avatar, age, gender} = res.data[0]
             // console.log(res.data[0].username + " berhasil login");
             dispatch(
@@ -75,7 +73,7 @@ export const updateProfile = (id) => {
                 }
             )
             // Save data kedalam cookie
-            cookie.set('userName', {id,username,f_name,l_name,email,avatar,age,gender})
+            cookie.set('userName', {id,username,f_name,l_name,email,avatar,age,gender}, {path:'/'})
             }
         })
     }
@@ -104,7 +102,6 @@ export const onLoginAdmin = (username, password) => {
                 // Print errornya
                 alert('Error: ' + res.data)
             } else {
-            console.log(res.data);
                 
             const {id, username} = res.data
             // console.log(res.data[0].username + " berhasil login");
@@ -117,7 +114,7 @@ export const onLoginAdmin = (username, password) => {
                 }
             )
             // Save data kedalam cookie
-            cookie.set('Admin', {id,username}, {path: '/'})
+            cookie.set('Admin', {id,username})
             }
         })
     }

@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import axios from 'axios'
-import InfiniteCarousel from 'react-leaf-carousel';
+// import InfiniteCarousel from 'react-leaf-carousel';
 import ProductSlider from './ProductSlider'
 import ProductItem from './ProductItem'
 
@@ -58,8 +58,9 @@ class Product extends Component {
 
   renderCategory = () => {
     return this.state.products.map(item => { // hasil map = item{id,name,desc,price,src}
-      const latest = this.state.products.length - 4
-
+      // const urutan = this.state.products.indexOf(item)
+      // const length = this.state.products.length - 5
+      
       if(item.category_id === this.state.category)  
       {
         return (
@@ -67,12 +68,11 @@ class Product extends Component {
         )
       }
 
-      if(item.id > latest){
-        if(this.state.category === 0){
-          return (
-            <ProductItem items={item}/>
-          )
-        }
+    // if(urutan > length)
+      if(this.state.category === 0){
+        return (
+          <ProductItem items={item}/>
+        )
       }
     })
   }

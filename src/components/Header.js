@@ -1,28 +1,54 @@
 import React, { Component } from 'react'
+import axios from 'axios'
 import { Link } from 'react-router-dom'
 import { connect } from 'react-redux'
 import { onLogoutUser, onLogoutAdmin } from '../action'
 import {
-    Button,
-    Collapse,
-    Navbar,
-    NavbarToggler,
-    Nav,
-    NavItem,
-    NavLink,
-    UncontrolledDropdown,
-    DropdownToggle,
-    DropdownMenu,
-    DropdownItem } from 'reactstrap';
+    Button, Modal, ModalHeader, ModalBody, ModalFooter,
+    Collapse, Navbar, NavbarToggler, Nav, NavItem,
+    NavLink, UncontrolledDropdown, DropdownToggle,
+    DropdownMenu, DropdownItem 
+} from 'reactstrap';
 
 class Header extends Component {
     constructor(props) {
         super(props);
-    
-        this.toggle = this.toggle.bind(this);
         this.state = {
-            isOpen: false
-        };
+            products : [],
+            cart : [],
+            badge : 0,
+            modal : false,
+            isOpen : false
+          };
+      
+        this.toggleModal = this.toggleModal.bind(this);
+        this.toggle = this.toggle.bind(this);
+    }
+
+    componentDidMount(){
+        this.getProduct()
+        this.getCart()
+    }
+
+    getProduct = () => {
+        axios.get('http://localhost:2019/products')
+            .then(res => {
+               this.setState({products: res.data})
+            })
+    }
+
+    getCart = () => {
+        axios.get('http://localhost:2019/cart')
+            .then(res => {
+                this.setState({cart: res.data})
+                this.getBadge()
+            })
+    }
+
+    toggleModal() {
+        this.setState(prevState => ({
+          modal: !prevState.modal
+        }));
     }
 
     toggle() {
@@ -31,13 +57,102 @@ class Header extends Component {
         });
     }
 
+    getBadge = () => {
+        this.state.cart.map(cart => {
+            if (cart.users_id === this.props.user.id) {
+                    this.setState({badge : this.state.badge+1})       
+            }
+        })
+    }
+
     onButtonClick = () => {
         this.props.onLogoutUser()
         this.props.onLogoutAdmin()
     }
 
+    addQty = (product, cart) => {
+        const user_id = this.props.user.id
+        const {products_id} = cart
+        const {stock} = product
+
+        axios.get(
+            'http://localhost:2019/cart/' + user_id + '/' + products_id
+        ).then( res => {
+            const totalQty = parseInt(res.data[0].qty) + 1  
+            if (totalQty<=stock) { // mengecek apakah qty yg dibeli melebihi stock barang
+                axios.patch('http://localhost:2019/cart/'+res.data[0].id,
+                { // jika user tsb telah memasukan product tersebut maka jumlah qty akan di update
+                    qty : totalQty
+                }).then(res=>{
+                    this.getCart()
+                })
+            } else {
+                alert('Stock yang tersedia tidak mencukupi')
+            }
+        })
+    }
+
+    minQty = (cart) => {
+        const user_id = this.props.user.id
+        const {products_id} = cart
+
+        axios.get(
+            'http://localhost:2019/cart/' + user_id + '/' + products_id
+        ).then( res => {
+            const totalQty = parseInt(res.data[0].qty) - 1  
+            if (totalQty === 0) { // mengecek apakah qty yg dibeli melebihi stock barang
+                axios.delete('http://localhost:2019/cart/'+res.data[0].id)
+                .then(res=>{
+                    this.getCart() 
+                })                
+            } else {
+                axios.patch('http://localhost:2019/cart/'+res.data[0].id,
+                { // jika user tsb telah memasukan product tersebut maka jumlah qty akan di update
+                    qty : totalQty
+                }).then(res=>{
+                    this.getCart()
+                })
+            }
+        })
+    }
+
+    deleteCart = (id) => {
+        axios.delete('http://localhost:2019/cart/'+id)
+        .then(res=>{
+            this.getCart() 
+        })
+    }
+
+    renderList = () => {
+        return this.state.products.map(item=>{
+            return this.state.cart.map(cart => {
+                if(cart.users_id === this.props.user.id){
+                    if(item.id === cart.products_id){
+                        return(
+                            <tr>
+                                <td>{item.product_name}</td>
+                                <td>{cart.qty}</td>
+                                <td>Rp. {item.price}</td>
+                                <td>Rp. {item.price*cart.qty}</td>
+                                <td>
+                                <img className='' style={{width: 15, height: 15}} alt='' src='https://image.flaticon.com/icons/svg/148/148782.svg' onClick={()=>{this.minQty(cart)}}/>
+                                <img className='ml-2' style={{width: 15, height: 15}} alt='' src='https://image.flaticon.com/icons/svg/148/148781.svg' onClick={()=>{this.addQty(item,cart)}}/>
+                                <img className='ml-2' style={{width: 15, height: 15}} alt='' src='https://image.flaticon.com/icons/svg/291/291202.svg' onClick={()=>{this.deleteCart(cart.id)}}/>
+                                </td>
+                            </tr>
+                        )
+                    }
+                }
+            })
+        })
+    }
+
     render () {
-        if(this.props.user.username === '' && this.props.admin.username === ''){
+        if (this.state.cart[0] === undefined) {
+            return(
+                <h1>L o a d i n g . . .</h1>
+            )
+        } else if(this.props.user.username === '' && this.props.admin.username === ''){
             return (
                 <div className="container">
                     <div className="row">
@@ -90,8 +205,14 @@ class Header extends Component {
                     <NavbarToggler onClick={this.toggle} />
                     <Collapse isOpen={this.state.isOpen} navbar>
                         <Nav className="ml-auto" navbar>
-                        <NavItem>
+                        <NavItem className='align-self-center'>
                             <NavLink href="/product">Products</NavLink>
+                        </NavItem>
+                        <NavItem className='text-center align-self-center'>
+                        <Button color="success" onClick={this.toggleModal}>
+                            <i class="fa fa-shopping-cart"></i> <b style={{color:'white'}}>Cart</b>
+                            <span class="badge badge-light m-1">{this.state.badge}</span>
+                        </Button>
                         </NavItem>
                         <UncontrolledDropdown nav inNavbar>
                         <DropdownToggle nav caret>
@@ -114,6 +235,32 @@ class Header extends Component {
                     </Navbar>
                     </div>
                 </div>
+                <Modal isOpen={this.state.modal} toggle={this.toggleModal}>
+                    <ModalHeader toggle={this.toggleModal}></ModalHeader>
+                    <h1 className="display-4 text-center"><b>C A R T</b></h1>
+                    <ModalBody>
+                        <div>
+                            <table className="table table-hover mb-5">
+                                <thead>
+                                    <tr>
+                                        <th >NAMA PRODUCT</th>
+                                        <th >QTY</th>
+                                        <th >PRICE</th>
+                                        <th >TOTAL HARGA</th>
+                                        <th >ACTION</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {this.renderList()}
+                                </tbody>
+                            </table>
+                        </div>
+                    </ModalBody>
+                    <ModalFooter>
+                    <Button color="primary" onClick={this.toggle}>Do Something</Button>{' '}
+                    <Button color="secondary" onClick={this.toggle}>Cancel</Button>
+                    </ModalFooter>
+                </Modal>
                 </div>
             );
         } else if (this.props.user.username === '' && this.props.admin.username !== '') {

@@ -25,7 +25,7 @@ class ProductItem extends Component {
         if (this.state.redirect) {
           return <Redirect to='/login' />
         }
-      }
+    }
 
     addToCart = () => {
         const user_id = this.props.user.id

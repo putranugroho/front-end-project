@@ -1,9 +1,8 @@
 import React, { Component } from 'react'
 import axios from 'axios'
 import { connect } from 'react-redux'
+import { Redirect } from 'react-router-dom'
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
-import { async } from 'q';
-
 class checkout extends Component {
     constructor(props) {
         super(props);
@@ -20,10 +19,17 @@ class checkout extends Component {
             selectPay: 0,
             selectedID: 0,
             input : false,
-            modal: false
+            modal: false,
+            redirect: false
         };
     
         this.toggle = this.toggle.bind(this);
+    }
+
+    setRedirect = () => {
+        this.setState({
+            redirect: true
+        })
     }
     
     getProduct = () => {
@@ -40,26 +46,14 @@ class checkout extends Component {
         })
     }
     
-    getCart = async () => {
-        try {
-            const res = await axios.get(`http://localhost:2019/cart/`)
-            this.setState({cart: res.data})
-            this.getBadge()
-            this.getCartUser()
-        } catch (error) {
-            console.log(error)  
-        }
+    getCart = () => {
+        axios.get(`http://localhost:2019/cart/`)
+        .then(res=>{
+        this.setState({cart: res.data})
+        this.getBadge()
+        this.getCartUser()
+        })
     }
-
-    // getCart = async () => {
-    //     try {
-    //         const res = await axios.get(`/get-carts/${this.props.user.id}`)
-    //         // console.log(res.data)
-    //         this.setState({carts: res.data})
-    //     } catch (error) {
-    //         console.log(error)
-    //     }
-    // }
     
     getSelected = () => {
         axios.get('http://localhost:2019/select')
@@ -356,7 +350,7 @@ class checkout extends Component {
         )
     }
 
-    letsgocheckout = () => {
+    letsgocheckout = async () => {
         var shipping_id = document.getElementsByName('paymentMethod')
             for(var i = 0; i < shipping_id.length; i++) { 
                 if(shipping_id[i].checked) {
@@ -367,18 +361,47 @@ class checkout extends Component {
         const address_id = this.state.selectedID
         const total_harga = this.totalHarga()
         const payment_id = this.state.selectPay
+        const users_id = this.props.user.id
 
-        axios.post('http://localhost:2019/addorder',{
+            console.log(`${shipping_id}, ${address_id}, ${payment_id}, ${total_harga}`)
+
+        const resOrder = await axios.post('http://localhost:2019/addcheckout',{
+            users_id,
             shipping_id,
             address_id,
             payment_id,
             total_harga
-        }).then(res=>{
-            alert(res.send)
-            this.getAddress()
-            this.getSelected()
         })
+
+        console.log(resOrder);
+
+        let arrayCart = []
+        let carts = this.state.user_cart
+        console.log(carts);
+
+        for(let i = 0; i < carts.length; i++) {
+            arrayCart.push([carts[i].products_id, carts[i].qty, resOrder.data[0].id])
+        }
+
+        console.log(arrayCart);
+    
+        const resOrderDetail = await axios.post('http://localhost:2019/orderdetail', {arrayCart})
+            
+        alert(resOrderDetail)
+
+        await axios.delete(`http://localhost:2019/hapuscart/${this.props.user.id}`)
+
+        this.setRedirect()
+    }
+
+    handleInsertOrderDetail = (order_id) => {
         
+    }
+
+    renderRedirect = () => {
+        if (this.state.redirect) {
+          return <Redirect to='/' />
+        }
     }
 
     render() {
@@ -431,8 +454,9 @@ class checkout extends Component {
                         {this.renderPayment()}
                     </div>
                     <hr class="mb-4"></hr>
-                    <Button class="btn btn-primary btn-lg btn-block" type="submit" onClick={()=>this.letsgocheckout()}>Continue to checkout</Button>
+                    <Button class="btn btn-primary btn-lg btn-block" onClick={()=>this.letsgocheckout()}>Continue to checkout</Button>
                 </form>
+                    {this.renderRedirect()}
                 </div>
             </div>
         </div>

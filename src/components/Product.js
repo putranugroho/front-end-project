@@ -143,7 +143,7 @@ class Product extends Component {
               <img class="rounded-circle" src="https://images.unsplash.com/photo-1543364195-bfe6e4932397?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=401&q=80" alt="Generic placeholder" width="140" height="140"/>
               <h2 className="mt-2">All Product</h2>
             </div>
-            <div class="col-lg-4 text-center" onClick={()=>this.setState({categorysort:1})}>
+            <div class="col-lg-4 text-center" onClick={()=>this.setState({categorysort:3})}>
               <img class="rounded-circle" src="https://images.unsplash.com/photo-1563169372-eb64c121f9dc?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=361&q=80" alt="Generic placeholder" width="140" height="140"/>
               <h2 className="mt-2">Buah</h2>
             </div>

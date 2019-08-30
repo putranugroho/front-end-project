@@ -7,13 +7,11 @@ class ManageDetail extends Component {
     
     state = {
         products: [],
-        detail: [],
         edit : 0,
         input : 0
     }
 
     componentDidMount(){
-        this.getDetail()
         this.getProduct()
     }
 
@@ -24,84 +22,63 @@ class ManageDetail extends Component {
             })
     }
 
-    getDetail = () => {
-        axios.get('http://localhost:2019/detail')
-            .then(res => {
-               this.setState({detail: res.data, edit : 0, input : 0})
+    deleteDetail = (item) => {
+        const detail = null
+
+        axios.patch('http://localhost:2019/products/'+item,
+            {
+                detail
+            }).then(res=>{
+                console.log("data telah disimpan");
+                console.log(res);
+                this.getProduct()
             })
     }
 
-    addDetail = () => {
-        const category_name = this.category_name.value
+    saveProduct = (item) => {
+        const detail = this.editDetail.value
         
-        axios.post(
-            'http://localhost:2019/addcategory',
+        if (detail === '') {
+            alert('masukan detail')
+        } 
+        else {
+            axios.patch('http://localhost:2019/products/'+item,
             {
-                category_name
-            }
-        ).then( (res) => {
-            console.log('Data berhasil di input')
-            console.log(res)
-            this.getCategory()
-        }).catch( (err) => {
-            console.log('Gagal post data')
-            console.log(err)
-        })
-    }
-
-    deleteCategory = (item) => {
-        axios.delete('http://localhost:2019/category/'+item.id).then(res=>{
-            console.log("data telah dihapus");
-            console.log(res);
-            this.getCategory() 
-        })
-    }
-
-    saveDetail = (item) => {
-        const category_name = this.category_name.value
-        
-        axios.patch('http://localhost:2019/category/'+item.id,
-        {
-            category_name
-        }).then(res=>{
-            console.log("data telah disimpan");
-            console.log(res);
-            this.getCategory()
-        })
+                detail
+            }).then(res=>{
+                console.log("data telah disimpan");
+                console.log(res);
+                this.getProduct()
+            })
+        }
     }
 
     renderList = () => {
         return this.state.products.map (item => {
-            return this.state.detail.map (detail => {
-                if (item.detail_id === detail.id){
-                    return (
-                        <tr>
-                            <th>{detail.id}</th>
-                            <th>{item.product_name}</th>
-                            <th>{detail.informasi}</th>
-                            <th>{detail.manfaat}</th>
-                            <th>{detail.tips}</th>
-                            <th>
-                                <button>Edit</button>
-                                <button>Delete</button>
-                            </th>
-                        </tr>
-                    )
-                }
-                    return (
-                        <tr>
-                            <th>{item.id}</th>
-                            <th>{item.product_name}</th>
-                            <th><input></input></th>
-                            <th><input></input></th>
-                            <th><input></input></th>
-                            <th>
-                                <button>Add</button>
-                                <button>Delete</button>
-                            </th>
-                        </tr>
-                    )
-            })
+            if (item.id !== this.state.edit){
+                return (
+                    <tr>
+                        <th>{item.id}</th>
+                        <th>{item.product_name}</th>
+                        <th>{item.detail}</th>
+                        <th>
+                            <button className='btn btn-warning' onClick={()=>{this.setState({edit:item.id})}}>Edit</button>
+                            <button className='btn btn-danger' onClick={()=>{this.deleteDetail(item.id)}}>Delete</button>
+                        </th>
+                    </tr>
+                )
+            }
+                return (
+                    <tr>
+                        <th>{item.id}</th>
+                        <th>{item.product_name}</th>
+                        <th><input ref={input => {this.editDetail = input}} defaultValue={item.detail}></input></th>
+                        <th>
+                            <button className='btn btn-success' onClick={()=>{this.saveProduct(item.id)}}>Save</button>
+                            <button className='btn btn-danger' onClick={()=>this.setState({edit:0})}>Cancel</button>
+                        </th>
+                    </tr>
+                )
         })
     }
 
@@ -114,9 +91,7 @@ class ManageDetail extends Component {
                         <tr>
                             <th scope="col">ID</th>
                             <th scope="col">PRODUCT NAME</th>
-                            <th scope="col">INFORMASI</th>
-                            <th scope="col">MANFAAT</th>
-                            <th scope="col">TIPS & TRICK</th>
+                            <th scope="col">DETAIL</th>
                             <th scope="col">ACTION</th>
                         </tr>
                     </thead>

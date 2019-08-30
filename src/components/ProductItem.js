@@ -52,16 +52,20 @@ class ProductItem extends Component {
                         } else {
                             alert('Stock yang tersedia tidak mencukupi')
                         }
-                    } else { // jika belum ada productnya maka akan menambahkan product baru kedalam Cart
-                        axios.post('http://localhost:2019/addcart',
-                        {
-                            users_id : user_id,
-                            products_id : id,
-                            qty : qty
-                        }).then(res=>{
-                            alert('NEW: product baru telah dimasukan kedalam cart')
-                            document.location.reload(true)
-                        })
+                    } else if (res.data.length === 0){ // jika belum ada productnya maka akan menambahkan product baru kedalam Cart
+                        if (qty<=stock) {
+                            axios.post('http://localhost:2019/addcart',
+                            {
+                                users_id : user_id,
+                                products_id : id,
+                                qty : qty
+                            }).then(res=>{
+                                alert('NEW: product baru telah dimasukan kedalam cart')
+                                document.location.reload(true)
+                            })
+                        } else {
+                            alert('Stock yang tersedia tidak mencukupi')
+                        }
                     }
                 })    
         } else {

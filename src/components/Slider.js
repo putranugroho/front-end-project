@@ -33,7 +33,7 @@ class Slider extends Component {
         return items.map(item => { // hasil map = item{id,name,desc,price,src}
             return (
               <a href={item.path}>
-                <img style={{width: 1200,height: 500}} src={item.src} alt={item.altText} />
+                <img style={{width: 1125,height: 500}} src={item.src} alt={item.altText} />
               </a>
             )
         })

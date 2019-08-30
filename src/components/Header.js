@@ -9,6 +9,7 @@ import {
     NavLink, UncontrolledDropdown, DropdownToggle,
     DropdownMenu, DropdownItem 
 } from 'reactstrap';
+import { async } from 'q';
 
 class Header extends Component {
     constructor(props) {
@@ -37,8 +38,8 @@ class Header extends Component {
             })
     }
 
-    getCart = () => {
-        axios.get('http://localhost:2019/cart')
+    getCart = async () => {
+        await axios.get('http://localhost:2019/cart')
             .then(res => {
                 this.setState({cart: res.data})
                 this.getBadge()
@@ -57,8 +58,8 @@ class Header extends Component {
         });
     }
 
-    getBadge = () => {
-        this.state.cart.map(cart => {
+    getBadge = async () => {
+        await this.state.cart.map(cart => {
             if (cart.users_id === this.props.user.id) {
                     this.setState({badge : this.state.badge+1})       
             }
@@ -148,11 +149,7 @@ class Header extends Component {
     }
 
     render () {
-        if (this.state.cart[0] === undefined) {
-            return(
-                <h1>L o a d i n g . . .</h1>
-            )
-        } else if(this.props.user.username === '' && this.props.admin.username === ''){
+        if(this.props.user.username === '' && this.props.admin.username === ''){
             return (
                 <div className="container">
                     <div className="row">
@@ -211,7 +208,7 @@ class Header extends Component {
                         <NavItem className='text-center align-self-center'>
                         <Button color="success" onClick={this.toggleModal}>
                             <i class="fa fa-shopping-cart"></i> <b style={{color:'white'}}>Cart</b>
-                            {/* <span class="badge badge-light m-1">{this.state.badge}</span> */}
+                            <span class="badge badge-light m-1">{this.state.badge}</span>
                         </Button>
                         </NavItem>
                         <UncontrolledDropdown nav inNavbar>

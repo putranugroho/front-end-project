@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import axios from 'axios'
 import { connect } from 'react-redux'
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
+import { async } from 'q';
 
 class checkout extends Component {
     constructor(props) {
@@ -12,6 +13,7 @@ class checkout extends Component {
             payment: [],
             shipping: [],
             cart : [],
+            user_cart : [],
             product : [],
             detail : [],
             badge : 0,
@@ -23,43 +25,47 @@ class checkout extends Component {
     
         this.toggle = this.toggle.bind(this);
     }
-
-    componentDidMount(){
-        this.getAddress()
-        this.getSelected()
-        this.getPayment()
-        this.getShipping()
-        this.getCart()
-        this.getProduct()
-        this.getDetail()
-    }
-
+    
     getProduct = () => {
         axios.get('http://localhost:2019/products')
-            .then(res => {
-               this.setState({product: res.data})
-            })
-    }
-
-    getDetail = () => {
-        axios.get('http://localhost:2019/detail')
-            .then(res => {
-               this.setState({detail: res.data})
-            })
-    }
-
-    getCart = () => {
-        axios.get('http://localhost:2019/cart')
         .then(res => {
-            this.setState({cart: res.data})
-            this.getBadge()
+            this.setState({product: res.data})
         })
     }
+    
+    getDetail = () => {
+        axios.get('http://localhost:2019/detail')
+        .then(res => {
+            this.setState({detail: res.data})
+        })
+    }
+    
+    getCart = async () => {
+        try {
+            const res = await axios.get(`http://localhost:2019/cart/`)
+            this.setState({cart: res.data})
+            this.getBadge()
+            this.getCartUser()
+        } catch (error) {
+            console.log(error)  
+        }
+    }
 
+    // getCart = async () => {
+    //     try {
+    //         const res = await axios.get(`/get-carts/${this.props.user.id}`)
+    //         // console.log(res.data)
+    //         this.setState({carts: res.data})
+    //     } catch (error) {
+    //         console.log(error)
+    //     }
+    // }
+    
     getSelected = () => {
-        axios.get('http://localhost:2019/select/')
+        axios.get('http://localhost:2019/select')
         .then(res => {
             this.setState({select: res.data})
+            
         })
     }
     
@@ -67,6 +73,7 @@ class checkout extends Component {
         axios.get('http://localhost:2019/address')
         .then(res => {
             this.setState({alamat: res.data})
+            this.getSelectedID()
         })
     }
     
@@ -83,7 +90,7 @@ class checkout extends Component {
             this.setState({payment: res.data})
         })
     }
-
+    
     getBadge = () => {
         this.state.cart.map(cart => {
             if (cart.users_id === this.props.user.id) {
@@ -91,23 +98,54 @@ class checkout extends Component {
             }
         })
     }
+
+    getCartUser = () => {
+        const cart_filter = this.state.cart.filter(cart =>{
+            if (cart.users_id === this.props.user.id) {
+                return cart
+            }
+        })
+
+        this.setState({user_cart : cart_filter})
         
+    }
+    
+    getSelectedID = () => {
+        this.state.alamat.map( add => {
+            if (add.users_id === this.props.user.id) {
+                if (add.selected === 1) {
+                    this.setState({selectedID : add.id})
+                }
+            }
+        })
+    }
+
+    componentDidMount(){
+        this.getAddress()
+        this.getSelected()
+        this.getPayment()
+        this.getShipping()
+        this.getCart()
+        this.getProduct()
+        this.getDetail()
+    }
+    
     toggle() {
         this.setState(prevState => ({
             modal: !prevState.modal
         }));
     }
-
+    
     selectedAddress = (id) =>{
         return this.state.select.map(select=>{
-            if(select.user_id === this.props.user.id){
+            if(select.users_id === this.props.user.id){
                 axios.get('http://localhost:2019/addressselected/' + select.id + '/' + id)
                 .then(res => {
                     alert('Alamat telah dirubah')
                     this.setState({modal:false})
                     this.getAddress()
                     this.getSelected()
-                    this.setState({selectedID:select.id})
+                    this.setState({selectedID:id})
                 })
             }
         })
@@ -115,7 +153,7 @@ class checkout extends Component {
 
     selectAlamat = () => {
         return this.state.alamat.map( add => {
-            if (add.user_id === this.props.user.id) {
+            if (add.users_id === this.props.user.id) {
                 if (add.selected === 1) {
                     return (
                         <div className='container mb-3'  style={{borderStyle:"solid", borderColor:'lime'}}>
@@ -151,8 +189,12 @@ class checkout extends Component {
 
     renderAlamat = () => {
         if (this.state.input === false) {
+            if (this.state.selectedID === 0) {
+                return <h1>Masukan alamat / pilih alamat dahulu</h1>
+            } 
             return this.state.alamat.map( add => {
-                if (add.user_id === this.props.user.id) {
+                if (add.users_id === this.props.user.id) {
+                    
                     if (add.selected === 1) {
                         return (
                             <div>
@@ -161,7 +203,7 @@ class checkout extends Component {
                                 <p>{add.kota} | {add.kode_pos}</p>
                                 <hr class="mb-4"></hr>
                             </div>
-                        )    
+                        )   
                     }
                 }
             })   
@@ -216,7 +258,7 @@ class checkout extends Component {
     }
 
     addAddress = () => {
-        const user_id = this.props.user.id
+        const users_id = this.props.user.id
         const label = this.label.value
         const penerima = this.penerima.value
         const no_hp = parseInt(this.no_hp.value)
@@ -224,11 +266,10 @@ class checkout extends Component {
         const kode_pos = parseInt(this.kode_pos.value)
         const alamat = this.alamat.value
         const selected = this.selected.checked
-        
             
         axios.post('http://localhost:2019/addaddress',
         {
-            user_id,
+            users_id,
             label,
             penerima,
             no_hp,
@@ -240,6 +281,7 @@ class checkout extends Component {
             console.log("data telah disimpan");
             console.log(res);
             this.getAddress()
+            this.getSelected()
             this.setState({input:!this.state.input})
         })
     }
@@ -248,7 +290,7 @@ class checkout extends Component {
         return this.state.shipping.map(ship=>{
             return (
                 <div className='col-3 m-2 align-self-center'>
-                    <input name="paymentMethod" type="radio" />{ship.nama_kurir}
+                    <input name="paymentMethod" type="radio" value={ship.id}/>{ship.nama_kurir}
                 </div>
             )
         })
@@ -280,23 +322,17 @@ class checkout extends Component {
     renderCart = () => {
         return this.state.cart.map (cart => {
         if(cart.users_id === this.props.user.id){
-            
             return this.state.product.map (item => {
             if(cart.products_id === item.id){
-                
-                // return this.state.detail.map (detail => {
-                // if(item.detail_id === detail.id){
-                    return (
-                        <li class="list-group-item d-flex justify-content-between lh-condensed">
-                            <div>
-                                <h6 class="my-0">{item.product_name}</h6>
-                                {/* <small class="text-muted">{detail.informasi}</small> */}
-                            </div>
-                            <span class="text-muted">Rp. {cart.qty * item.price }</span>
-                        </li>
-                    )
-                // }
-                // })
+                return (
+                    <li class="list-group-item d-flex justify-content-between lh-condensed">
+                        <div>
+                            <h6 class="my-0">{item.product_name}</h6>
+                            <small class="text-muted">{item.detail}</small>
+                        </div>
+                        <span class="text-muted">Rp. {cart.qty * item.price }</span>
+                    </li>
+                )
             }
             })
         }
@@ -305,22 +341,44 @@ class checkout extends Component {
 
     totalHarga = () => { // Menjumlahkan Harga barang yang dibeli user
         var total = 0
-
         for (let i = 0; i < this.state.cart.length; i++) {
             if (this.state.cart[i].users_id === this.props.user.id) {
                 for (let j = 0; j < this.state.product.length; j++) {
                     if (this.state.cart[i].products_id === this.state.product[j].id) {
                     const jumlah = this.state.cart[i].qty * this.state.product[j].price
-                    total = total + jumlah
-                    
+                    total = total + jumlah        
                     }
                 }                
             }
         }
-
         return (
             total
         )
+    }
+
+    letsgocheckout = () => {
+        var shipping_id = document.getElementsByName('paymentMethod')
+            for(var i = 0; i < shipping_id.length; i++) { 
+                if(shipping_id[i].checked) {
+                    shipping_id = (shipping_id[i].value);
+                }
+            } 
+
+        const address_id = this.state.selectedID
+        const total_harga = this.totalHarga()
+        const payment_id = this.state.selectPay
+
+        axios.post('http://localhost:2019/addorder',{
+            shipping_id,
+            address_id,
+            payment_id,
+            total_harga
+        }).then(res=>{
+            alert(res.send)
+            this.getAddress()
+            this.getSelected()
+        })
+        
     }
 
     render() {
@@ -373,7 +431,7 @@ class checkout extends Component {
                         {this.renderPayment()}
                     </div>
                     <hr class="mb-4"></hr>
-                    <button class="btn btn-primary btn-lg btn-block" type="submit">Continue to checkout</button>
+                    <Button class="btn btn-primary btn-lg btn-block" type="submit" onClick={()=>this.letsgocheckout()}>Continue to checkout</Button>
                 </form>
                 </div>
             </div>

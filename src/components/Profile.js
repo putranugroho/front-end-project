@@ -12,16 +12,27 @@ class Profile extends Component {
     }
 
     saveProfile = (id) => {
-        const username = this.username.value
         const f_name = this.f_name.value
         const l_name = this.l_name.value
         const email = this.email.value
         const age = this.age.value
         const gender = this.gender.value
+
+        if (f_name === '') {
+            alert('masukan first name')
+        }
+        else if (l_name === ''){
+            alert('masukan last name')
+        }
+        else if (age === ''){
+            alert('masukan age')
+        }
+        else if (email === ''){
+            alert('masukan email')
+        }else{
         
         axios.patch('http://localhost:2019/users/profile/'+id,
         {
-            username,
             f_name,
             l_name,
             email,
@@ -33,6 +44,7 @@ class Profile extends Component {
             this.props.updateProfile(id)
             this.setState({edit:false})
         })
+        }
     }
 
     uploadImage = (id) => {

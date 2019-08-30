@@ -41,20 +41,29 @@ class ManageProduct extends Component {
         const category_id = this.category.value
         const price = this.price.value
         const stock = this.stock.value
-        console.log(this.category.value);
         
+        if (product_name === '') {
+            alert('masukan product name')
+        } else
+        if (price === '') {
+            alert('masukan price')
+        } else
+        if (stock === '') {
+            alert('masukan stock')
+        } else {
+            axios.post('http://localhost:2019/addproducts',
+            {
+                product_name,
+                category_id,
+                price,
+                stock
+            }).then(res=>{
+                console.log("data telah disimpan");
+                console.log(res);
+                this.getProduct()
+            })
+        }
         
-        axios.post('http://localhost:2019/addproducts',
-        {
-            product_name,
-            category_id,
-            price,
-            stock
-        }).then(res=>{
-            console.log("data telah disimpan");
-            console.log(res);
-            this.getProduct()
-        })
     }
 
     saveProduct = (item) => {
@@ -63,17 +72,27 @@ class ManageProduct extends Component {
         const price = this.editPrice.value
         const stock = this.editStock.value
         
-        axios.patch('http://localhost:2019/products/'+item,
-        {
-            product_name,
-            category_id,
-            price,
-            stock
-        }).then(res=>{
-            console.log("data telah disimpan");
-            console.log(res);
-            this.getProduct()
-        })
+        if (product_name === '') {
+            alert('masukan product name')
+        } else
+        if (price === '') {
+            alert('masukan price')
+        } else
+        if (stock === '') {
+            alert('masukan stock')
+        } else {
+            axios.patch('http://localhost:2019/products/'+item,
+            {
+                product_name,
+                category_id,
+                price,
+                stock
+            }).then(res=>{
+                console.log("data telah disimpan");
+                console.log(res);
+                this.getProduct()
+            })
+        }
     }
 
     uploadImage = (id) => {

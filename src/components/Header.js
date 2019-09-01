@@ -219,6 +219,9 @@ class Header extends Component {
                             <DropdownItem>
                             <Link to='/profile' >Profile</Link>
                             </DropdownItem>
+                            <DropdownItem>
+                            <Link to={'/OrderHistory/' + this.props.user.id} >Order History</Link>
+                            </DropdownItem>
                             <DropdownItem divider />
                             <Link to='/login' >
                             <Button className="dropdown-item" onClick={this.onButtonClick}>
@@ -254,7 +257,7 @@ class Header extends Component {
                         </div>
                     </ModalBody>
                     <ModalFooter>
-                    <Link to='/checkout' onClick={this.toggleModal}>
+                    <Link to={'/checkout/'+this.props.user.id} onClick={this.toggleModal}>
                     <Button color="primary" >Pembayaran</Button>{' '}
                     </Link>
                     </ModalFooter>

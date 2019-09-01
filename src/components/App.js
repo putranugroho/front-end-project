@@ -10,11 +10,14 @@ import Slider from './Slider'
 import Product from './Product'
 import HomeAdmin from './admin/HomeAdmin'
 import LoginAdmin from './admin/LoginAdmin'
+import ManageOrder from './admin/ManageOrder'
 import Login from './Login'
 import Profile from './Profile'
 import Blog from './Blog'
 import Event from './Event'
+import Confirm from './Confirm'
 import detailProduct from './DetailProduct'
+import OrderHistory from './OrderHistory'
 import checkout from './Checkout'
 // import Footer from './Footer'
 
@@ -53,9 +56,12 @@ class App extends React.Component{
                     <Route path='/blog' component={Blog}/>
                     <Route path='/event' component={Event}/>
                     <Route path='/detailproduct/:product_id' component={detailProduct}/>
+                    <Route path='/OrderHistory/:users_id' component={OrderHistory}/>
                     <Route path='/admin' component={HomeAdmin}/>
                     <Route path='/loginadmin' component={LoginAdmin}/>
-                    <Route path='/checkout' component={checkout}/>
+                    <Route path='/ManageOrder' component={ManageOrder}/>
+                    <Route path='/checkout/:users_id' component={checkout}/>
+                    <Route path='/confirm/:users_id' component={Confirm}/>
                     {/* <Footer/> */}
                 </div>
             </BrowserRouter>

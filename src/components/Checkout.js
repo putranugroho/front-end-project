@@ -12,6 +12,7 @@ class checkout extends Component {
             payment: [],
             shipping: [],
             cart : [],
+            checkout : [],
             user_cart : [],
             product : [],
             detail : [],
@@ -84,6 +85,15 @@ class checkout extends Component {
             this.setState({payment: res.data})
         })
     }
+
+    getCheckout = () => {
+        let users_id = this.props.match.params.users_id
+
+        axios.get('http://localhost:2019/pendingpayment/' + users_id)
+        .then(res => {
+            this.setState({checkout: res.data})
+        })
+    }
     
     getBadge = () => {
         this.state.cart.map(cart => {
@@ -99,9 +109,7 @@ class checkout extends Component {
                 return cart
             }
         })
-
         this.setState({user_cart : cart_filter})
-        
     }
     
     getSelectedID = () => {
@@ -122,6 +130,7 @@ class checkout extends Component {
         this.getCart()
         this.getProduct()
         this.getDetail()
+        this.getCheckout()
     }
     
     toggle() {
@@ -297,7 +306,7 @@ class checkout extends Component {
                     <div className='card-body col-3 ' style={{borderStyle:"solid", borderColor:'lime'}} onClick={()=>{this.setState({selectPay:pay.id})}}>
                         <div className='card-body'>
                             <h3 className='card-title'>{pay.nama_bank}</h3>
-                            <p className='card-text'>{pay.no_rek}</p>
+                            {/* <p className='card-text'>{pay.no_rek}</p> */}
                         </div>
                     </div>
                 )
@@ -306,7 +315,7 @@ class checkout extends Component {
                 <div className='card-body col-3 text-center'  onClick={()=>{this.setState({selectPay:pay.id})}}>
                     <div className='card-body'>
                         <h3 className='card-title'>{pay.nama_bank}</h3>
-                        <p className='card-text'>{pay.no_rek}</p>
+                        {/* <p className='card-text'>{pay.no_rek}</p> */}
                     </div>
                 </div>
             )
@@ -351,26 +360,35 @@ class checkout extends Component {
     }
 
     letsgocheckout = async () => {
-        var shipping_id = document.getElementsByName('paymentMethod')
-            for(var i = 0; i < shipping_id.length; i++) { 
-                if(shipping_id[i].checked) {
-                    shipping_id = (shipping_id[i].value);
+        if (this.state.checkout.length > 0) {
+            alert('Bayar dulu woi mesen mulu')
+            this.setRedirect()
+        }
+        else {
+        var shipping = document.getElementsByName('paymentMethod')
+            for(var i = 0; i < shipping.length; i++) { 
+                if(shipping[i].checked) {
+                    shipping = (shipping[i].value);
                 }
             } 
+
+        var shipping_id = parseInt(shipping)
 
         const address_id = this.state.selectedID
         const total_harga = this.totalHarga()
         const payment_id = this.state.selectPay
         const users_id = this.props.user.id
+        const order_status = "Transaksi Pending"
 
-            console.log(`${shipping_id}, ${address_id}, ${payment_id}, ${total_harga}`)
+        console.log(`${shipping_id}, ${address_id}, ${payment_id}, ${total_harga}`)
 
         const resOrder = await axios.post('http://localhost:2019/addcheckout',{
             users_id,
             shipping_id,
             address_id,
             payment_id,
-            total_harga
+            total_harga,
+            order_status
         })
 
         console.log(resOrder);
@@ -393,14 +411,11 @@ class checkout extends Component {
 
         this.setRedirect()
     }
-
-    handleInsertOrderDetail = (order_id) => {
-        
     }
 
     renderRedirect = () => {
         if (this.state.redirect) {
-          return <Redirect to='/' />
+          return <Redirect to={'/confirm/'+this.props.user.id} />
         }
     }
 

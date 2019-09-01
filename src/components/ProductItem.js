@@ -3,8 +3,6 @@ import { Link, Redirect } from 'react-router-dom'
 import axios from 'axios'
 import {connect} from 'react-redux'
 
-import Login from './Login'
-
 class ProductItem extends Component {
     
     state = {

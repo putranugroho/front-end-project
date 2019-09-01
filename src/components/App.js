@@ -19,7 +19,7 @@ import Confirm from './Confirm'
 import detailProduct from './DetailProduct'
 import OrderHistory from './OrderHistory'
 import checkout from './Checkout'
-// import Footer from './Footer'
+import Footer from './Footer'
 
 import { keepLogin, keepAdmin } from '../action'
 
@@ -62,7 +62,7 @@ class App extends React.Component{
                     <Route path='/ManageOrder' component={ManageOrder}/>
                     <Route path='/checkout/:users_id' component={checkout}/>
                     <Route path='/confirm/:users_id' component={Confirm}/>
-                    {/* <Footer/> */}
+                    <Footer/>
                 </div>
             </BrowserRouter>
         )   

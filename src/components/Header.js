@@ -66,8 +66,10 @@ class Header extends Component {
         })
     }
 
-    onButtonClick = () => {
+    logoutUser = () => {
         this.props.onLogoutUser()
+    }
+    logoutAdmin = () => {
         this.props.onLogoutAdmin()
     }
 
@@ -208,7 +210,7 @@ class Header extends Component {
                         <NavItem className='text-center align-self-center'>
                         <Button color="success" onClick={this.toggleModal}>
                             <i class="fa fa-shopping-cart"></i> <b style={{color:'white'}}>Cart</b>
-                            <span class="badge badge-light m-1">{this.state.badge}</span>
+                            {/* <span class="badge badge-light m-1">{this.state.badge}</span> */}
                         </Button>
                         </NavItem>
                         <UncontrolledDropdown nav inNavbar>
@@ -224,7 +226,7 @@ class Header extends Component {
                             </DropdownItem>
                             <DropdownItem divider />
                             <Link to='/login' >
-                            <Button className="dropdown-item" onClick={this.onButtonClick}>
+                            <Button className="dropdown-item" onClick={this.logoutUser}>
                             Logout
                             </Button>
                             </Link>
@@ -290,7 +292,7 @@ class Header extends Component {
                             </DropdownItem>
                             <DropdownItem divider />
                             <Link to='/login' >
-                            <Button className="dropdown-item" onClick={this.onButtonClick}>
+                            <Button className="dropdown-item" onClick={this.logoutAdmin}>
                             Logout
                             </Button>
                             </Link>

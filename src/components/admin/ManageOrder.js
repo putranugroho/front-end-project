@@ -74,7 +74,7 @@ class ManageOrder extends Component {
         )
     }
     CancelPayment = (id) => {
-        axios.get('http://localhost:2019/cancelpayment/'+id)
+        axios.delete('http://localhost:2019/checkout/receipt/'+id)
         .then(
             document.location.reload(true),
             this.getCheckout()
@@ -85,10 +85,10 @@ class ManageOrder extends Component {
     renderOrder = (status) => {
         return this.state.checkout.map(co =>{
             if (co.order_status === status) {
-        return this.state.payment.map (pay=> {
-            if (co.payment_id === pay.id) {
         return this.state.shipping.map (ship=> {
             if (co.shipping_id === ship.id) {
+        return this.state.payment.map (pay=> {
+            if (co.payment_id === pay.id) {
             return (
                 <div className='container mt-4' style={{borderStyle:"solid", borderColor:'AntiqueWhite'}}>
                     <div className='row mt-2'>
@@ -128,7 +128,6 @@ class ManageOrder extends Component {
                         <Button className='btn btn-success m-2'onClick={()=>this.ConfirmPayment(co.id)}>Confirm</Button>
                         <Button className='btn btn-danger m-2'onClick={()=>this.CancelPayment(co.id)}>Cancel</Button>
                         </div>
-                    </div>
                     <Modal isOpen={this.state.modal} toggle={this.toggle} className={this.props.className}>
                         <ModalHeader toggle={this.toggle}>ORDER RECEIPT</ModalHeader>
                         <ModalBody>
@@ -139,6 +138,7 @@ class ManageOrder extends Component {
                             <Button color="secondary" onClick={()=>{this.CancelPayment(co.id)}}>Cancel</Button>
                         </ModalFooter>
                     </Modal>
+                    </div>
                 </div>
             )    
             }    

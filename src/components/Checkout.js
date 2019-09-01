@@ -12,7 +12,8 @@ class checkout extends Component {
             payment: [],
             shipping: [],
             cart : [],
-            checkout : [],
+            pending : [],
+            cancel : [],
             user_cart : [],
             product : [],
             detail : [],
@@ -21,7 +22,8 @@ class checkout extends Component {
             selectedID: 0,
             input : false,
             modal: false,
-            redirect: false
+            redirect: false,
+            redirectcancel: false
         };
     
         this.toggle = this.toggle.bind(this);
@@ -30,6 +32,11 @@ class checkout extends Component {
     setRedirect = () => {
         this.setState({
             redirect: true
+        })
+    }
+    setRedirectcancel = () => {
+        this.setState({
+            redirectcancel: true
         })
     }
     
@@ -88,10 +95,18 @@ class checkout extends Component {
 
     getCheckout = () => {
         let users_id = this.props.match.params.users_id
-
+        
         axios.get('http://localhost:2019/pendingpayment/' + users_id)
         .then(res => {
-            this.setState({checkout: res.data})
+            this.setState({pending: res.data})
+        })
+    }
+    getCheckoutCancel = () => {
+        let users_id = this.props.match.params.users_id
+
+        axios.get('http://localhost:2019/cancelpayment/' + users_id)
+        .then(res => {
+            this.setState({cancel: res.data})
         })
     }
     
@@ -131,6 +146,7 @@ class checkout extends Component {
         this.getProduct()
         this.getDetail()
         this.getCheckout()
+        this.getCheckoutCancel()
     }
     
     toggle() {
@@ -281,8 +297,6 @@ class checkout extends Component {
             alamat,
             selected
         }).then(res=>{
-            console.log("data telah disimpan");
-            console.log(res);
             this.getAddress()
             this.getSelected()
             this.setState({input:!this.state.input})
@@ -302,14 +316,46 @@ class checkout extends Component {
     renderPayment = () => {
         return this.state.payment.map(pay=>{
             if(this.state.selectPay === pay.id){
+                if(pay.id === 1){
                 return (
-                    <div className='card-body col-3 ' style={{borderStyle:"solid", borderColor:'lime'}} onClick={()=>{this.setState({selectPay:pay.id})}}>
+                    <div className='card-body col-3 ' style={{backgroundColor:'LightSkyBlue'}} onClick={()=>{this.setState({selectPay:pay.id})}}>
                         <div className='card-body'>
-                            <h3 className='card-title'>{pay.nama_bank}</h3>
+                            <h3 className='card-title' style={{Color:'White'}}>{pay.nama_bank}</h3>
                             {/* <p className='card-text'>{pay.no_rek}</p> */}
                         </div>
                     </div>
                 )
+                } else
+                if(pay.id === 2){
+                return (
+                    <div className='card-body col-3 ' style={{backgroundColor:'MidnightBlue'}} onClick={()=>{this.setState({selectPay:pay.id})}}>
+                        <div className='card-body'>
+                            <h3 className='card-title' style={{Color:'White'}}>{pay.nama_bank}</h3>
+                            {/* <p className='card-text'>{pay.no_rek}</p> */}
+                        </div>
+                    </div>
+                )
+                } else
+                if(pay.id === 3){
+                return (
+                    <div className='card-body col-3 ' style={{backgroundColor:'DarkOrange'}} onClick={()=>{this.setState({selectPay:pay.id})}}>
+                        <div className='card-body'>
+                            <h3 className='card-title' style={{Color:'White'}}>{pay.nama_bank}</h3>
+                            {/* <p className='card-text'>{pay.no_rek}</p> */}
+                        </div>
+                    </div>
+                )
+                } else
+                if(pay.id === 4){
+                return (
+                    <div className='card-body col-3 ' style={{backgroundColor:'Red'}} onClick={()=>{this.setState({selectPay:pay.id})}}>
+                        <div className='card-body'>
+                            <h3 className='card-title' style={{Color:'White'}}>{pay.nama_bank}</h3>
+                            {/* <p className='card-text'>{pay.no_rek}</p> */}
+                        </div>
+                    </div>
+                )
+                }
             }
             return (
                 <div className='card-body col-3 text-center'  onClick={()=>{this.setState({selectPay:pay.id})}}>
@@ -360,9 +406,14 @@ class checkout extends Component {
     }
 
     letsgocheckout = async () => {
-        if (this.state.checkout.length > 0) {
+        if (this.state.pending.length > 0) {
             alert('Bayar dulu woi mesen mulu')
             this.setRedirect()
+        } else if (this.state.cancel.length > 0){
+            alert('Transaksi anda telah ditolak, silahkan upload ulang bukti pembayaran')
+            this.setRedirectcancel()
+        } else if (this.state.user_cart.length === 0){
+            alert('Belanja dulu baru bayar')
         }
         else {
         var shipping = document.getElementsByName('paymentMethod')
@@ -380,7 +431,7 @@ class checkout extends Component {
         const users_id = this.props.user.id
         const order_status = "Transaksi Pending"
 
-        console.log(`${shipping_id}, ${address_id}, ${payment_id}, ${total_harga}`)
+        // console.log(`${shipping_id}, ${address_id}, ${payment_id}, ${total_harga}`)
 
         const resOrder = await axios.post('http://localhost:2019/addcheckout',{
             users_id,
@@ -391,23 +442,24 @@ class checkout extends Component {
             order_status
         })
 
-        console.log(resOrder);
+       // console.log(resOrder);
 
         let arrayCart = []
         let carts = this.state.user_cart
-        console.log(carts);
+    //    console.log(carts);
 
         for(let i = 0; i < carts.length; i++) {
             arrayCart.push([carts[i].products_id, carts[i].qty, resOrder.data[0].id])
         }
 
-        console.log(arrayCart);
+        //console.log(arrayCart);
     
         const resOrderDetail = await axios.post('http://localhost:2019/orderdetail', {arrayCart})
             
-        alert(resOrderDetail)
-
+        
         await axios.delete(`http://localhost:2019/hapuscart/${this.props.user.id}`)
+        
+        alert('Order terhasil berhasil dibuat, Silahkan lakukan pembayaran dan upload bukti transfer')
 
         this.setRedirect()
     }
@@ -418,8 +470,15 @@ class checkout extends Component {
           return <Redirect to={'/confirm/'+this.props.user.id} />
         }
     }
+    renderRedirectCancel = () => {
+        if (this.state.redirectcancel) {
+          return <Redirect to={'/OrderHistory/'+this.props.user.id} />
+        }
+    }
 
     render() {
+        console.log(this.state.cancel);
+        
         return (
         <div className='container mt-2 mb-5'>
             <div class="row">
@@ -469,9 +528,10 @@ class checkout extends Component {
                         {this.renderPayment()}
                     </div>
                     <hr class="mb-4"></hr>
-                    <Button class="btn btn-primary btn-lg btn-block" onClick={()=>this.letsgocheckout()}>Continue to checkout</Button>
+                    <Button className="btn btn-lg btn-block" color='primary' onClick={()=>this.letsgocheckout()}>Continue to checkout</Button>
                 </form>
                     {this.renderRedirect()}
+                    {this.renderRedirectCancel()}
                 </div>
             </div>
         </div>

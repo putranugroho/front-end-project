@@ -39,7 +39,6 @@ class OrderHistory extends Component {
         axios.get('http://localhost:2019/checkout/' + users_id)
         .then(res => {
             this.setState({checkout: res.data})
-            console.log(res.data);
         })
     }
     getAddress = () => {
@@ -61,6 +60,21 @@ class OrderHistory extends Component {
     getOrderDetail = () => {
         axios.get('http://localhost:2019/orderdetail')
         .then(res=> this.setState({orderdetail:res.data}))
+    }
+
+    uploadImage = (id) => {
+        const formData = new FormData()
+        const image = this.image.files[0]
+        
+        formData.append('image', image)
+        formData.append('id', id)
+
+        axios.post('http://localhost:2019/checkout/receipt', formData
+        ).then(res=>{
+            alert('Gambar berhasil di upload')
+            console.log(res.data);
+            document.location.reload(true)
+        })
     }
 
     renderCart = (id) =>{
@@ -135,6 +149,7 @@ class OrderHistory extends Component {
                     <div className='row mb-3'>
                         <div className='col'>
                         <center><h2 style={{color:'red'}}>Silahkan lanjutkan transaksi dulu sebelum belanja lagi</h2></center>
+                        <a href={'/confirm/'+this.props.user.id}><button className='btn btn-primary btn-block'>Checkout</button></a>
                         </div>
                     </div>
                 </div>
@@ -173,7 +188,7 @@ class OrderHistory extends Component {
                                 <img className='ml-2' style={{width: 200, height: 200}} alt='' src={`http://localhost:2019/checkout/receipt/${co.order_receipt}`} />
                             </div>
                             <div className='col border-left'>
-                                <center><h2 style={{color:'Lime'}}>Bukti Pembayaran anda telah kami terima, Order akan segera diproses</h2></center>
+                                <center><h2 style={{color:'MediumBlue'}}>Bukti Pembayaran anda telah kami terima, Order akan segera diproses</h2></center>
                             </div>
                         </div>
                     </div>
@@ -217,7 +232,7 @@ class OrderHistory extends Component {
                         </div>
                     </div>
                 )
-            }else if(co.order_status === 'Transaksi Dibatalkan'){
+            }else if(co.order_status === 'Transaksi Ditolak'){
                 return (
                     <div className='container mt-4' style={{borderStyle:"solid", borderColor:'Red'}}>
                         <div className='row mt-2'>
@@ -247,11 +262,12 @@ class OrderHistory extends Component {
                             {this.renderCart(co.id)}
                         <div className='row mb-3'>
                             <div className='col border-right'>
-                            <img className='ml-2' style={{width: 200, height: 200}} alt='' src={`http://localhost:2019/checkout/receipt/${co.order_receipt}`} onClick={this.toggle} />
+                            <h5>Order Receipt : </h5>
+                            <input type='file' ref={input => {this.image = input}}></input>
                             </div>
                             <div className='col border-left'>
-                            <h5>Order Receipt : </h5>
-                                <center><h2 style={{color:'red'}}>Transaksi anda telah dibatalkan</h2></center>
+                            <center><h2 style={{color:'red'}}>Transaksi anda telah dibatalkan</h2></center>
+                            <button class="btn btn-primary btn-lg btn-block" onClick={()=>{this.uploadImage(co.id)}}>Upload Gambar</button>
                             </div>
                         </div>
                     </div>
@@ -264,6 +280,23 @@ class OrderHistory extends Component {
     })
     }
 
+    sortOrder = () => {
+        const order = this.order.value
+        const urutan = this.urutan.value
+
+        console.log(order);
+        console.log(urutan);
+        
+
+        axios.post('http://localhost:2019/sortcheckout/'+this.props.user.id,{
+            order,
+            urutan
+        }).then(res=>
+            this.setState({checkout:res.data})
+        )
+
+    }
+
     render(){
         return (
             <div className='container'>
@@ -271,18 +304,20 @@ class OrderHistory extends Component {
                 <h1><center>Order History</center></h1>
                 <div className='row'>
                     <span className='col-1 text-center align-self-center'>Sort By : </span>
-                    <div className='col-5'>
-                        <select class="form-control">
-                            <option></option>
+                    <div className='col-5' >
+                        <select class="form-control" ref={input => this.order = input}>
+                            <option value='CREATED_AT'>Created At</option>
+                            <option value='UPDATED_AT'>Updated At</option>
+                            <option value='order_status'>Order Status</option>
                         </select>
                     </div>
                     <div className='col-5'>
-                        <select className='form-control'>
+                        <select className='form-control' ref={input => this.urutan = input}>
                             <option>ASC</option>
                             <option>DESC</option>
                         </select>
                     </div>
-                    <button className='btn btn-success'>Filter</button>
+                    <button className='btn btn-success' onClick={()=>this.sortOrder()}>Filter</button>
                 </div>
                 {this.renderOrder()}
             </div>
@@ -295,7 +330,7 @@ class OrderHistory extends Component {
 
 const mapStatetoProps = state => {
     return {
-        admin: state.admin
+        user: state.auth
     }
 }
 

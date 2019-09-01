@@ -1,8 +1,24 @@
 import React, {Component} from 'react'
 import axios from 'axios'
-import {Link} from 'react-router-dom'
+import {Link, Redirect} from 'react-router-dom'
 
 class Register extends Component {
+
+    state = {
+        redirect: false
+    }
+    
+    setRedirect = () => {
+        this.setState({
+          redirect: true
+        })
+    }
+    
+    renderRedirect = () => {
+        if (this.state.redirect) {
+          return <Redirect to='/login' />
+        }
+    }
 
     onButtonClick = () => {
         const username = this.username.value
@@ -26,10 +42,11 @@ class Register extends Component {
                     username, f_name, l_name, email, password
                 }
             ).then( (res) => {
-                console.log('Data berhasil di input')
+                alert('Data berhasil di input')
                 console.log(res)
+                this.setRedirect()
             }).catch( (err) => {
-                console.log('Gagal post data')
+                alert('Gagal post data')
                 console.log(err)
             })
         }
@@ -69,10 +86,11 @@ class Register extends Component {
                             <form className='input-group'>
                                 <input className='form-control' type='password' ref={(input)=>{this.password = input}}/>
                             </form>
-                            <button className='btn btn-primary' onClick={this.onButtonClick}>
+                            <button className='btn btn-primary mt-2' onClick={this.onButtonClick}>
                                 Click for Register
                             </button>
                             <p>Sudah memiliki akun ? <Link to='/login'>Login Disini!</Link></p>
+                            {this.renderRedirect()}
                         </div>
                     </div>
                 </div>

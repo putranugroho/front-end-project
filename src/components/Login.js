@@ -39,7 +39,7 @@ class Login extends Component {
                                 <form className='input-group'>
                                     <input className='form-control' type='password' ref={(input)=>{this.password = input}}/>
                                 </form>
-                                <button className='btn btn-primary' onClick={this.onButtonClick}>
+                                <button className='btn btn-primary mt-2' onClick={this.onButtonClick}>
                                     LOGIN
                                 </button>
                                 <p>Tidak memiliki akun ? <Link to='/register'>Click Disini!</Link></p>
